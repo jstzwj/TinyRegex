@@ -2,8 +2,7 @@
 #include"tr_type.h"
 int main()
 {
-	tinyregex::StateTable a;
-	a['s'][8] = 0;
+	tinyregex::TinyRegex re(T("s*$"));
 
 	return 0;
 }

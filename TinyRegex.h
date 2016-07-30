@@ -8,12 +8,14 @@ namespace tinyregex
 	public:
 		string_t content;
 		int priority;
+		bool isOperator;
 	};
-	inline Token make_token(const string_t &content,int priority )
+	inline Token make_token(const string_t &content,int priority,bool isOperator )
 	{
 		Token temp;
 		temp.content = content;
 		temp.priority = priority;
+		temp.isOperator = isOperator;
 		return temp;
 	}
 	class TinyRegex
@@ -22,10 +24,12 @@ namespace tinyregex
 		string_t pattern;
 	public:
 		TinyRegex();
-		TinyRegex(const string_t &pattern);
+		TinyRegex(const string_t &p);
+		void assign(const string_t &p);
 		~TinyRegex();
 	private:
-		string_t regexParse();
+		std::vector<Token> regexParse();
+		void addAnd(int &i, int &envNum, std::stack<Token> & operatorStack, std::vector<Token> &ans);
 	};
 	bool regex_match(const string_t &source,const TinyRegex &pattern,TinyResult & result);
 }
