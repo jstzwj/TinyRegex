@@ -32,13 +32,13 @@ namespace tinyregex
 
 	std::vector<Token> TinyRegex::regexParse()
 	{
-		std::stack<Token> operatorStack;
+		std::vector<Token> operatorStack;
 		std::vector<Token> ans;
 		std::vector<byte> beforeEnv;	//保留
 		int len = pattern.length();
 		int envNum=0;
 		//存入优先级最低的结束符
-		operatorStack.push(make_token(T("\0"),32,true));
+		operatorStack.push_back(make_token(T("\0"),32,true));
 		//遍历
 		for (int i = 0; i < len;++i)
 		{
@@ -83,12 +83,14 @@ namespace tinyregex
 						token.content = T("(?:");
 						token.priority = 10;
 						token.isOperator = true;
+						i = i + 2;
 					}
 					else if (i < pattern.length() - 2 && pattern[i + 2] == T('='))
 					{
 						token.content = T("(?=");
 						token.priority = 10;
 						token.isOperator = true;
+						i = i + 2;
 					}
 					else
 					{
@@ -102,7 +104,7 @@ namespace tinyregex
 					token.priority = 10;
 					token.isOperator = true;
 				}
-				operatorStack.push(token);
+				operatorStack.push_back(token);
 				//压入当前环境值
 				beforeEnv.push_back(envNum);
 				//重置当前环境值
@@ -112,9 +114,9 @@ namespace tinyregex
 			{
 				while (!operatorStack.empty())
 				{
-					string_t s = operatorStack.top().content;
-					ans.push_back(operatorStack.top());
-					operatorStack.pop();
+					string_t s = operatorStack.back().content;
+					ans.push_back(operatorStack.back());
+					operatorStack.pop_back();
 					if (s==T("(")||s==T("(?:")||s==T("(?="))
 					{
 						break;
@@ -174,69 +176,105 @@ namespace tinyregex
 			}
 			else if (pattern[i]==T('*'))	//2
 			{
-				Token token;
-				token.content = T('*');
-				token.priority = 2;
-				token.isOperator = true;
-				//优先级
-				while (!operatorStack.empty() && operatorStack.top().priority <= 2)
+				ans.back().repeat.start=0;
+				ans.back().repeat.end = -1;
+				if (pattern[i+1]==T('?'))
 				{
-					ans.push_back(operatorStack.top());
-					operatorStack.pop();
-				}
-				operatorStack.push(token);
-			}
-			else if (pattern[i] == T('+'))	//2
-			{
-				Token token;
-				token.content = T('+');
-				token.priority = 2;
-				token.isOperator = true;
-				//优先级
-				while (!operatorStack.empty() && operatorStack.top().priority <=2)
-				{
-					ans.push_back(operatorStack.top());
-					operatorStack.pop();
-				}
-				operatorStack.push(token);
-			}
-			else if (pattern[i] == T('?'))	//2
-			{
-				Token token;
-				token.content = T('?');
-				token.priority = 2;
-				token.isOperator = true;
-				//优先级
-				while (!operatorStack.empty() && operatorStack.top().priority <= 2)
-				{
-					ans.push_back(operatorStack.top());
-					operatorStack.pop();
-				}
-				operatorStack.push(token);
-			}
-			else if (pattern[i] == T('{'))	//2
-			{
-				Token token;
-				int j;
-				for (j = i; j < len&&pattern[j] != T('}'); ++j) {}
-				if (pattern[j] == '}')
-				{
-					token.content = pattern.substr(i, j + 1 - i);
-					token.priority = 2;
-					token.isOperator = true;
-					while (!operatorStack.empty() && operatorStack.top().priority <= 2)
-					{
-						ans.push_back(operatorStack.top());
-						operatorStack.pop();
-					}
-					operatorStack.push(token);
-					i = j + 1;
+					ans.back().repeat.isPositive=true;
+					++i;
 				}
 				else
 				{
-					//TODO error
+					ans.back().repeat.isPositive = false;
 				}
-				
+			}
+			else if (pattern[i] == T('+'))	//2
+			{
+				ans.back().repeat.start = 1;
+				ans.back().repeat.end = -1;
+				if (pattern[i + 1] == T('?'))
+				{
+					ans.back().repeat.isPositive = true;
+					++i;
+				}
+				else
+				{
+					ans.back().repeat.isPositive = false;
+				}
+			}
+			else if (pattern[i] == T('?'))	//2
+			{
+				ans.back().repeat.start = 0;
+				ans.back().repeat.end = -1;
+				if (pattern[i + 1] == T('?'))
+				{
+					ans.back().repeat.isPositive = true;
+					++i;
+				}
+				else
+				{
+					ans.back().repeat.isPositive = false;
+				}
+			}
+			else if (pattern[i] == T('{'))	//2
+			{
+				int j = i;
+				int fstNum = 0;
+				int secNum = 0;//超尾
+				int whichNum = 0;
+				bool isError = false;
+				//匹配数字
+				for (;j<len;++j)
+				{
+					if (isdigit(pattern[j]))
+					{
+						if(whichNum==0)
+							fstNum = fstNum * 10 + wctoi(pattern[j]);
+						else
+							secNum = secNum * 10 + wctoi(pattern[j]);
+					}
+					else if (pattern[j] == T(','))
+					{
+						if (whichNum == 0)
+						{
+							if (pattern[j + 1] == '}')
+							{
+								secNum = -1;
+								break;
+							}
+							++whichNum;
+						}
+						else
+						{
+							//TODO error
+							isError = true;
+							break;
+						}
+
+					}
+					else if (pattern[j] == T('}'))
+					{
+						isError = false;
+						break;
+					}
+					else
+					{
+						//TODO error
+						isError = true;
+						break;
+					}
+				}
+				if (fstNum>=secNum)
+				{
+					//TODO error
+					isError = true;
+				}
+				if (!isError)
+				{
+					ans.back().repeat.start=fstNum;
+					ans.back().repeat.end = secNum;
+					ans.back().repeat.isPositive = true;
+				}
 			}
 			else if (pattern[i] == T('^'))
 			{
@@ -263,12 +301,12 @@ namespace tinyregex
 				token.priority = 4 ;
 				token.isOperator = true;
 				//优先级
-				while (!operatorStack.empty()&&operatorStack.top().priority < 4)
+				while (!operatorStack.empty()&&operatorStack.back().priority < 4)
 				{
-					ans.push_back(operatorStack.top());
-					operatorStack.pop();
+					ans.push_back(operatorStack.back());
+					operatorStack.pop_back();
 				}
-				operatorStack.push(token);
+				operatorStack.push_back(token);
 				//环境值减一
 				--envNum;
 			}
@@ -286,8 +324,8 @@ namespace tinyregex
 		//操作符全部弹出
 		while (!operatorStack.empty())
 		{
-			ans.push_back(operatorStack.top());
-			operatorStack.pop();
+			ans.push_back(operatorStack.back());
+			operatorStack.pop_back();
 		}
 		for (Token &eachs:ans)
 		{
@@ -297,7 +335,7 @@ namespace tinyregex
 		return ans;
 	}
 
-	void TinyRegex::addAnd(int &i,int &envNum,std::stack<Token> & operatorStack,std::vector<Token> &ans)
+	inline void TinyRegex::addAnd(int &i,int &envNum,std::vector<Token> & operatorStack,std::vector<Token> &ans)
 	{
 		//是字符、环境值加一
 		++envNum;
@@ -308,24 +346,8 @@ namespace tinyregex
 			token.content = T('&');
 			token.isOperator = true;
 			token.priority = 3;
-			if (pattern[i+1]==T('*')|| pattern[i + 1] == T('+') || pattern[i + 1] == T('?'))
-			{
-				//优先级
-				while (!operatorStack.empty() && operatorStack.top().priority <= 3)
-				{
-					ans.push_back(operatorStack.top());
-					operatorStack.pop();
-				}
-				string_t temp;
-				temp.push_back(pattern[i + 1]);
-				ans.push_back(make_token(temp,2,true));
-				ans.push_back(token);
-				++i;
-			}
-			else
-			{
-				ans.push_back(token);
-			}
+			ans.push_back(token);
+
 			//环境值减一
 			--envNum;
 		}
