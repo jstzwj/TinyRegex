@@ -15,25 +15,31 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="TinyRegex.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="TinyResult.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="tr_type.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="TinyRegex.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="TinyResult.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="tr_type.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="StateMachine.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="TinyRegex.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="StateMachine.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="TinyResult.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

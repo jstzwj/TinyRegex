@@ -18,6 +18,18 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="StateMachine.h" />
+    <ClInclude Include="TinyRegex.h" />
+    <ClInclude Include="TinyResult.h" />
+    <ClInclude Include="tr_type.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="StateMachine.cpp" />
+    <ClCompile Include="TinyRegex.cpp" />
+    <ClCompile Include="TinyResult.cpp" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{18C51C6F-29FE-410D-9D74-87D93971ABF8}</ProjectGuid>
     <RootNamespace>tinyregex</RootNamespace>
@@ -109,16 +121,6 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <ClCompile Include="main.cpp" />
-    <ClCompile Include="TinyRegex.cpp" />
-    <ClCompile Include="TinyResult.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="TinyRegex.h" />
-    <ClInclude Include="TinyResult.h" />
-    <ClInclude Include="tr_type.h" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
