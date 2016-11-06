@@ -27,6 +27,12 @@
     <ClInclude Include="StateMachine.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="TinyRegexParser.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="TinyRegexAst.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="TinyRegex.cpp">
@@ -39,6 +45,12 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="main.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="TinyRegexParser.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="TinyRegexAst.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

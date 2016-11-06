@@ -21,6 +21,8 @@
   <ItemGroup>
     <ClInclude Include="StateMachine.h" />
     <ClInclude Include="TinyRegex.h" />
+    <ClInclude Include="TinyRegexAst.h" />
+    <ClInclude Include="TinyRegexParser.h" />
     <ClInclude Include="TinyResult.h" />
     <ClInclude Include="tr_type.h" />
   </ItemGroup>
@@ -28,6 +30,8 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="StateMachine.cpp" />
     <ClCompile Include="TinyRegex.cpp" />
+    <ClCompile Include="TinyRegexAst.cpp" />
+    <ClCompile Include="TinyRegexParser.cpp" />
     <ClCompile Include="TinyResult.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
