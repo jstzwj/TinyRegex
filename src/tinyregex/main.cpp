@@ -1,8 +1,16 @@
-#include"TinyRegex.h"
-#include"tr_type.h"
-int main()
+#include <iostream>
+#include"tinyregex.h"
+
+using namespace std;
+using namespace tyre;
+
+int main(int argc, char *argv[])
 {
-	tinyregex::TinyRegex re(T("(a|(?:b|ce))d"));
-	system("pause");
-	return 0;
+    TinyRegex r(T("hello regex\\.*|hello"));
+    bool result = r.match(r,T("hello"));
+    std::cout << result;
+    return 0;
 }
+#include<iostream>
+
+

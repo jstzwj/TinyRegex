@@ -1,0 +1,14 @@
+#ifndef AUTOMATON_H
+#define AUTOMATON_H
+
+namespace tyre
+{
+    class automaton
+    {
+    public:
+        automaton();
+    };
+}
+
+
+#endif // AUTOMATON_H

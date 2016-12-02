@@ -1,51 +1,27 @@
-#include "TinyRegex.h"
-
-
-namespace tinyregex
+#include "tinyregex.h"
+namespace tyre
 {
-	TinyRegex::TinyRegex()
-	{
-	}
+    TinyRegex::TinyRegex()
+    {
 
-	tinyregex::TinyRegex::TinyRegex(const string_t & p)
-		:pattern(p)
-	{
-		//编译表达式
-		out = regexParse();
-	}
+    }
 
-	void TinyRegex::assign(const string_t & p)
-	{
-		if (p != pattern)
-		{
-			pattern = p;
-			out=regexParse();
-		}
-	}
+    TinyRegex::TinyRegex(const string_t &pattern)
+    {
+        root=compile(pattern);
+    }
 
+    ExpBase *TinyRegex::compile(const tyre::string_t &pattern)
+    {
+        AstParser parser;
+        root=parser.parse(pattern);
+        return root;
+    }
 
-	TinyRegex::~TinyRegex()
-	{
-	}
+    bool tyre::TinyRegex::match(const tyre::TinyRegex &regex, const tyre::string_t &str)
+    {
 
-	//解析为语法树
-	ExpPtr TinyRegex::regexParse()
-	{
-		TinyRegexParser par;
-		char_t * start = &*(pattern.begin());
-		ExpPtr root = par.Parse(start);
-		return root;
-	}
-	
-
-
-
-
-
-
-	bool regex_match(const string_t & source, const TinyRegex & pattern, TinyResult & result)
-	{
-		return false;
-	}
-
+    }
 }
+
+
