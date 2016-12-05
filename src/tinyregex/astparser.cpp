@@ -96,22 +96,32 @@ namespace tyre
         function=this->parseCharSet(pattern,curpos);
         if(function!=nullptr)
         {
-            ExpUnit *unit=new ExpUnit;
-            ExpBase *loop=this->parseLoop(pattern,curpos);
-            unit->str=function;
-            unit->loop=loop;
-            return unit;
+            ExpLoop *loop=dynamic_cast<ExpLoop *>(this->parseLoop(pattern,curpos));
+            if(loop!=nullptr)
+            {
+                loop->exp=function;
+                return loop;
+            }
+            else
+            {
+                return function;
+            }
         }
         else
         {
             function=this->parseFunction(pattern,curpos);
             if(function!=nullptr)
             {
-                ExpUnit *unit=new ExpUnit;
-                ExpBase *loop=this->parseLoop(pattern,curpos);
-                unit->str=function;
-                unit->loop=loop;
-                return unit;
+                ExpLoop *loop=dynamic_cast<ExpLoop *>(this->parseLoop(pattern,curpos));
+                if(loop!=nullptr)
+                {
+                    loop->exp=function;
+                    return loop;
+                }
+                else
+                {
+                    return function;
+                }
             }
             else
             {

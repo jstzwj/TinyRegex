@@ -8,18 +8,28 @@ namespace tyre
 
     TinyRegex::TinyRegex(const string_t &pattern)
     {
-        root=compile(pattern);
+        compile(pattern);
     }
 
-    ExpBase *TinyRegex::compile(const tyre::string_t &pattern)
+    void TinyRegex::compile(const tyre::string_t &pattern)
     {
         AstParser parser;
         root=parser.parse(pattern);
-        return root;
+
+        nfa=new NfaGraph;
+        graph=new Automaton;
+        *nfa=root->generate(graph);
+        return;
     }
 
-    bool tyre::TinyRegex::match(const tyre::TinyRegex &regex, const tyre::string_t &str)
+    bool TinyRegex::match(const tyre::TinyRegex &regex, const tyre::string_t &str)
     {
+        std::list<StateFrame> vstack;
+        State * curState=nfa->begin;
+        int i=0;
+
+
+
 
     }
 }

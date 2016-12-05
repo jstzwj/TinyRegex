@@ -7,7 +7,8 @@ SOURCES += main.cpp \
     tinyregex.cpp \
     astparser.cpp \
     message.cpp \
-    automaton.cpp
+    automaton.cpp \
+    nfagraph.cpp
 
 HEADERS += \
     tinyregex.h \
@@ -15,4 +16,5 @@ HEADERS += \
     astnode.h \
     astparser.h \
     message.h \
-    automaton.h
+    automaton.h \
+    nfagraph.h

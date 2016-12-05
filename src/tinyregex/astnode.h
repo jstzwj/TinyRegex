@@ -2,6 +2,8 @@
 #define ASTNODE_H
 #include<vector>
 #include"base.h"
+#include"automaton.h"
+#include"nfagraph.h"
 namespace tyre
 {
     class ExpBase
@@ -9,6 +11,7 @@ namespace tyre
     public:
         ExpBase(){}
         virtual void release(){}
+        virtual NfaGraph generate(Automaton * graph)=0;
         virtual ~ExpBase(){}
     };
     class ExpOr:public ExpBase
@@ -25,6 +28,26 @@ namespace tyre
                 right->release();
             delete this;
         }
+
+        virtual NfaGraph generate(Automaton * graph)
+        {
+            NfaGraph leftGraph,rightGraph,result;
+
+            result.begin=graph->addState();
+            result.end=graph->addState();
+
+            leftGraph=left->generate(graph);
+            rightGraph=right->generate(graph);
+
+            graph->addEmptyTransition(result.begin,leftGraph.begin);
+            graph->addEmptyTransition(result.begin,rightGraph.begin);
+
+            graph->addEmptyTransition(leftGraph.end,result.end);
+            graph->addEmptyTransition(rightGraph.end,result.end);
+
+            return result;
+        }
+
         virtual ~ExpOr(){}
     };
     class ExpAnd:public ExpBase
@@ -40,6 +63,19 @@ namespace tyre
             if(right!=nullptr)
                 right->release();
             delete this;
+        }
+        virtual NfaGraph generate(Automaton * graph)
+        {
+            NfaGraph leftGraph,rightGraph,result;
+
+            leftGraph=left->generate(graph);
+            rightGraph=right->generate(graph);
+
+            graph->addEmptyTransition(leftGraph.end,rightGraph.begin);
+
+            result.begin=leftGraph.begin;
+            result.end=rightGraph.end;
+            return result;
         }
         virtual ~ExpAnd(){}
     };
@@ -73,11 +109,21 @@ namespace tyre
                 subexp->release();
             delete this;
         }
+        virtual NfaGraph generate(Automaton * graph)
+        {
+            NfaGraph result;
+
+            result=subexp->generate(graph);
+
+            return result;
+        }
         virtual ~ExpFunction(){}
     };
+    /*
     class ExpUnit:public ExpBase
     {
     public:
+        //str不使用
         ExpUnit():ExpBase(),str(nullptr),loop(nullptr){}
         ExpBase * str;
         ExpBase * loop;
@@ -89,25 +135,31 @@ namespace tyre
                 loop->release();
             delete this;
         }
+        virtual NfaGraph generate(Automaton * graph)
+        {
+            NfaGraph result;
+
+            result=loop->generate(graph);
+            return result;
+        }
         virtual ~ExpUnit(){}
     };
-    //表示一个字符串的范围
-    class Range
-    {
-    public:
-        Range(){}
-        Range(char_t begin,char_t end,bool inverse=false)
-            :charBegin(begin),charEnd(end),isInverse(inverse) {}
-        char_t charBegin;
-        char_t charEnd;
-        bool isInverse;
-    };
+    */
 
     class ExpCharRange:public ExpBase
     {
     public:
         std::vector<Range> rangles;
         virtual void release(){delete this;}
+        virtual NfaGraph generate(Automaton * graph)
+        {
+            NfaGraph result;
+            result.begin=graph->addState();
+            result.end=graph->addState();
+            //以后加入集合划分
+            graph->addCharRange(result.begin,result.end,*rangles.begin());
+            return result;
+        }
         virtual ~ExpCharRange(){}
     };
     class ExpLoop:public ExpBase
@@ -122,6 +174,13 @@ namespace tyre
             if(exp!=nullptr)
                 exp->release();
             delete this;
+        }
+        virtual NfaGraph generate(Automaton * graph)
+        {
+            NfaGraph result;
+            result=exp->generate(graph);
+            graph->addLoop(result.begin,result.end,min,max);
+            return result;
         }
         virtual ~ExpLoop(){}
     };
