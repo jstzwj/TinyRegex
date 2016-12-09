@@ -6,11 +6,16 @@ using namespace tyre;
 
 int main(int argc, char *argv[])
 {
-    TinyRegex r(T("hello regex\\.*|hell0"));
-    bool result = r.match(r,T("hello"));
-    std::cout << result;
+    while(1)
+    {
+        string_t str;
+        std::wcin>>str;
+        TinyRegex r(T("c*d"));
+        bool result = r.match(str);
+        std::cout << result<<std::endl;
+    }
     return 0;
 }
-#include<iostream>
+
 
 

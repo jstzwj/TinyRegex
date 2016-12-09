@@ -48,7 +48,6 @@ namespace tyre
             else
             {
                 //end
-                curpos=savePos;
                 break;
             }
         }
@@ -73,15 +72,14 @@ namespace tyre
             ExpBase *right=this->parseUnit(pattern,curpos);
             if(right!=nullptr)
             {
-                ExpOr *result=new ExpOr;
+                ExpAnd *result=new ExpAnd;
                 result->left=left;
                 result->right=right;
                 left=result;
             }
             else
             {
-                //error
-                curpos=savePos;
+                //end
                 break;
             }
         }
@@ -96,9 +94,10 @@ namespace tyre
         function=this->parseCharSet(pattern,curpos);
         if(function!=nullptr)
         {
-            ExpLoop *loop=dynamic_cast<ExpLoop *>(this->parseLoop(pattern,curpos));
-            if(loop!=nullptr)
+            ExpBase * loopBase=this->parseLoop(pattern,curpos);
+            if(loopBase!=nullptr)
             {
+                ExpLoop *loop=dynamic_cast<ExpLoop *>(loopBase);
                 loop->exp=function;
                 return loop;
             }
@@ -226,11 +225,13 @@ namespace tyre
         int savePos=curpos;
         if((unsigned int)curpos>=pattern.length())
         {
+            curpos=savePos;
             return nullptr;
         }
         if(this->isChar(pattern,curpos,T('[')))
         {
             //暂时不做
+            curpos=savePos;
             return nullptr;
         }
         else
@@ -242,13 +243,13 @@ namespace tyre
                 {
                 //escape sequence
                 case T('r'):
-                    range->rangles.push_back(Range(T('\r'),T('\r')));
+                    range->rangles.push_back(CharRange(T('\r'),T('\r')));
                     break;
                 case T('t'):
-                    range->rangles.push_back(Range(T('\t'),T('\t')));
+                    range->rangles.push_back(CharRange(T('\t'),T('\t')));
                     break;
                 case T('n'):
-                    range->rangles.push_back(Range(T('\n'),T('\n')));
+                    range->rangles.push_back(CharRange(T('\n'),T('\n')));
                     break;
                 //key words
                 case T('\\'):
@@ -269,34 +270,49 @@ namespace tyre
                 case T('$'):
                 case T('|'):
                 case T('*'):
-                    range->rangles.push_back(Range(pattern[curpos],pattern[curpos]));
+                    range->rangles.push_back(CharRange(pattern[curpos],pattern[curpos]));
                     break;
                 //real ordinary charset
                 case T('s'):
-                    range->rangles.push_back(Range(T('\r'),T('\r')));
-                    range->rangles.push_back(Range(T('\t'),T('\t')));
-                    range->rangles.push_back(Range(T('\n'),T('\n')));
+                    range->rangles.push_back(CharRange(T('\r'),T('\r')));
+                    range->rangles.push_back(CharRange(T('\t'),T('\t')));
+                    range->rangles.push_back(CharRange(T('\n'),T('\n')));
                     break;
                 case T('S'):
-                    range->rangles.push_back(Range(T('\r'),T('\r'),true));
-                    range->rangles.push_back(Range(T('\t'),T('\t'),true));
-                    range->rangles.push_back(Range(T('\n'),T('\n'),true));
+                    range->rangles.push_back(CharRange(T('\r'),T('\r'),true));
+                    range->rangles.push_back(CharRange(T('\t'),T('\t'),true));
+                    range->rangles.push_back(CharRange(T('\n'),T('\n'),true));
                     break;
                 case T('d'):
-                    range->rangles.push_back(Range(T('0'),T('9')));
+                    range->rangles.push_back(CharRange(T('0'),T('9')));
                     break;
                 case T('D'):
-                    range->rangles.push_back(Range(T('0'),T('9'),true));
+                    range->rangles.push_back(CharRange(T('0'),T('9'),true));
                     break;
                 default:
-                    range->rangles.push_back(Range(pattern[curpos],pattern[curpos],false));
+                    range->rangles.push_back(CharRange(pattern[curpos],pattern[curpos],false));
                 }
                 return range;
             }
             else
             {
+                switch(pattern[curpos])
+                {
+                case T('('):
+                case T(')'):
+                case T('+'):
+                case T('*'):
+                case T('?'):
+                case T('{'):
+                case T('}'):
+                case T('|'):
+                    curpos=savePos;
+                    return nullptr;
+                default:
+                    break;
+                }
                 ExpCharRange * range=new ExpCharRange;
-                range->rangles.push_back(Range(pattern[curpos],pattern[curpos],false));
+                range->rangles.push_back(CharRange(pattern[curpos],pattern[curpos],false));
                 ++curpos;
                 return range;
             }

@@ -11,6 +11,8 @@ namespace tyre
     State *Automaton::addState()
     {
         State * newState=new State;
+        newState->isEndState=false;
+
         states.push_back(newState);
         return newState;
     }
@@ -21,6 +23,7 @@ namespace tyre
 
         newTransition->source=start;
         newTransition->target=end;
+        newTransition->passCounter=0;
 
         transitions.push_back(newTransition);
         start->out.push_back(newTransition);
@@ -28,7 +31,7 @@ namespace tyre
         return newTransition;
     }
 
-    Transition *Automaton::addCharRange(State *start, State *end, Range range)
+    Transition *Automaton::addCharRange(State *start, State *end, CharRange range)
     {
         Transition * newTransition=addTransition(start,end);
         newTransition->type=TransitionType::CHARS;
@@ -45,13 +48,18 @@ namespace tyre
         return newTransition;
     }
 
-    Transition *Automaton::addLoop(State *start, State *end, int beginLoop, int endLoop)
+    Transition *Automaton::addLoop(State *start, State *end)
     {
         Transition * newTransition=addTransition(start,end);
-        newTransition->type=TransitionType::LOOP;
-        newTransition->range=Range(beginLoop,endLoop);
+        newTransition->type=TransitionType::EMPTY;
         return newTransition;
     }
-
+    Transition *Automaton::addLoop(State *start, State *end, CharRange range)
+    {
+        Transition * newTransition=addTransition(start,end);
+        newTransition->type=TransitionType::CHARS;
+        newTransition->range=range;
+        return newTransition;
+    }
 }
 

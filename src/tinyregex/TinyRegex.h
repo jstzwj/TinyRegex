@@ -13,7 +13,7 @@ namespace tyre {
         TinyRegex();
         TinyRegex(const string_t& pattern);
         void compile(const string_t& pattern);
-        bool match(const TinyRegex & regex,const string_t & str);
+        bool match(const string_t & str);
     private:
         ExpBase * root;
         Automaton * graph;

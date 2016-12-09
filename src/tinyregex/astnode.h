@@ -2,8 +2,10 @@
 #define ASTNODE_H
 #include<vector>
 #include"base.h"
-#include"automaton.h"
 #include"nfagraph.h"
+#include"automaton.h"
+
+
 namespace tyre
 {
     class ExpBase
@@ -47,7 +49,6 @@ namespace tyre
 
             return result;
         }
-
         virtual ~ExpOr(){}
     };
     class ExpAnd:public ExpBase
@@ -149,7 +150,7 @@ namespace tyre
     class ExpCharRange:public ExpBase
     {
     public:
-        std::vector<Range> rangles;
+        std::vector<CharRange> rangles;
         virtual void release(){delete this;}
         virtual NfaGraph generate(Automaton * graph)
         {
@@ -178,8 +179,44 @@ namespace tyre
         virtual NfaGraph generate(Automaton * graph)
         {
             NfaGraph result;
-            result=exp->generate(graph);
-            graph->addLoop(result.begin,result.end,min,max);
+            if(min>=1)
+            {
+                result=exp->generate(graph);
+                for(int i=1;i<min;++i)
+                {
+                    NfaGraph copy=exp->generate(graph);
+                    graph->addEmptyTransition(result.end,copy.begin);
+                    result.end=copy.end;
+                }
+            }
+            else
+            {
+                State *emptyNode=graph->addState();
+                result.begin=emptyNode;
+                result.end=emptyNode;
+            }
+
+
+            if(max==-1)
+            {
+                NfaGraph infiniteLoop=exp->generate(graph);
+                graph->addEmptyTransition(result.end,infiniteLoop.begin);
+                graph->addEmptyTransition(infiniteLoop.end,result.begin);
+            }
+            else
+            {
+                State *tmpEnd=graph->addState();
+                for(int i=min;i<max;++i)
+                {
+                    NfaGraph copy=exp->generate(graph);
+                    graph->addEmptyTransition(copy.begin,tmpEnd);
+                    graph->addEmptyTransition(result.end,copy.begin);
+                    result.end=copy.end;
+                }
+                graph->addEmptyTransition(result.end,tmpEnd);
+                result.end=tmpEnd;
+            }
+            //graph->addLoop(result.begin,result.end);
             return result;
         }
         virtual ~ExpLoop(){}

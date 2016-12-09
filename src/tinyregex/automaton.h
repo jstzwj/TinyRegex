@@ -2,8 +2,14 @@
 #define AUTOMATON_H
 #include<vector>
 #include"base.h"
+
 namespace tyre
 {
+
+    class NfaGraph;
+    class Automaton;
+    class State;
+    class Transition;
     enum TransitionType
     {
         CHARS,
@@ -12,30 +18,22 @@ namespace tyre
         END
     };
     //表示一个字符串的范围
-    class Range
+    class CharRange
     {
     public:
-        Range(){}
-        Range(char_t begin,char_t end,bool inverse=false)
+        CharRange(){}
+        CharRange(char_t begin,char_t end,bool inverse=false)
             :charBegin(begin),charEnd(end),isInverse(inverse) {}
-        Range(int begin,int end,bool inverse=false)
-            :charBegin(begin),charEnd(end),isInverse(inverse) {}
-        int charBegin;
-        int charEnd;
+        char_t charBegin;
+        char_t charEnd;
         bool isInverse;
+
         bool isSubSet(int element)
         {
             bool result;
-            if(element>=charBegin||element<=charEnd)
+            if(element>=charBegin&&element<=charEnd)
             {
-                if(charEnd==-1)
-                {
-                    result=true;
-                }
-                else
-                {
-                    result=false;
-                }
+                result=true;
             }
             if(isInverse==true)
             {
@@ -44,7 +42,36 @@ namespace tyre
             return result;
         }
     };
-    class State;
+    class LoopRange
+    {
+    public:
+        LoopRange(){}
+        LoopRange(int begin,int end,bool inverse=false)
+            :loopBegin(begin),loopEnd(end),isInverse(inverse) {}
+        int loopBegin;
+        int loopEnd;
+        bool isInverse;
+
+        bool isSubSet(int element)
+        {
+            bool result;
+            if(element>=loopBegin&&element<=loopEnd)
+            {
+                result=true;
+            }
+            else if(element>=loopBegin&&loopEnd==-1)
+            {
+                result=true;
+            }
+            if(isInverse==true)
+            {
+                result=!result;
+            }
+            return result;
+        }
+    };
+
+
     class Transition
     {
     public:
@@ -52,11 +79,12 @@ namespace tyre
             :source(nullptr),target(nullptr){}
         Transition(State * src,State * tar)
             :source(src),target(tar){}
-        Transition(State * src,State * tar,const Range &ran)
+        Transition(State * src,State * tar,const CharRange &ran)
             :source(src),target(tar),range(ran){}
         State * source;
         State * target;
-        Range range;
+        CharRange range;
+        int passCounter;
         TransitionType type;
     };
     class StateFrame
@@ -73,7 +101,50 @@ namespace tyre
     public:
         std::vector<Transition *> out;
         std::vector<Transition *> in;
-        bool end;
+        bool isEndState;
+        int edgeLock;
+
+        bool match(const string_t str,int pos)
+        {
+            bool result(false);
+            if((unsigned int)pos==str.length())
+            {
+                if(isEndState==true)
+                {
+                    return true;
+                }
+            }
+            if((unsigned int)pos>str.length())
+            {
+                return false;
+            }
+            for(unsigned int i=0;i<out.size();++i)
+            {
+                switch(out[i]->type)
+                {
+                case TransitionType::CHARS:
+                    if(out[i]->range.isSubSet(str[pos])||
+                            out[i]->type==TransitionType::EMPTY)
+                    {
+                        if(out[i]->target->match(str,pos+1))
+                        {
+                            result = true;
+                        }
+                    }
+                    break;
+                case TransitionType::EMPTY:
+                    if(out[i]->target->match(str,pos))
+                    {
+                        result = true;
+                    }
+                    break;
+                default:
+                    break;
+                }
+            }
+
+            return result;
+        }
     };
     class Automaton
     {
@@ -83,10 +154,11 @@ namespace tyre
         std::vector<Transition *> transitions;
         //interfaces
         State * addState();
-        Transition *addCharRange(State * start,State * end,Range range);
+        Transition *addCharRange(State * start,State * end,CharRange range);
         Transition *addTransition(State * start,State * end);
         Transition *addEmptyTransition(State * start,State * end);
-        Transition *addLoop(State * start,State * end,int beginLoop,int endLoop);
+        Transition *addLoop(State * start, State * end);//empty
+        Transition *addLoop(State *start, State *end, CharRange range);
     };
 }
 
