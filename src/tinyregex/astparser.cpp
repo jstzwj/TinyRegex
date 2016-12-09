@@ -183,7 +183,7 @@ namespace tyre
             loop->max=1;
             return loop;
         }
-        else if(isChar(pattern,curpos,T('[')))
+        else if(isChar(pattern,curpos,T('{')))
         {
             loop=new ExpLoop;
             int min=getPositiveInt(pattern,curpos);
@@ -211,13 +211,13 @@ namespace tyre
             {
                 loop->max=min;
             }
-            if(!isChar(pattern,curpos,T(']')))
+            if(!isChar(pattern,curpos,T('}')))
             {
                 throw T("error: expected right bracket near \'")+
                         toString(pattern[curpos])+T("\'\r\nposition: ")+toString(curpos);
             }
         }
-        return nullptr;
+        return loop;
     }
 
     ExpBase *AstParser::parseCharSet(const string_t &pattern, int &curpos)

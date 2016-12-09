@@ -10,7 +10,7 @@ int main(int argc, char *argv[])
     {
         string_t str;
         std::wcin>>str;
-        TinyRegex r(T("c*d"));
+        TinyRegex r(T("c{1,2}d"));
         bool result = r.match(str);
         std::cout << result<<std::endl;
     }
