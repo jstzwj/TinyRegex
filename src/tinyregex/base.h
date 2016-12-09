@@ -22,7 +22,7 @@ namespace tyre
     #define CHARMAX 65536
     #define T(X) L##X
     #define toString(X) std::to_wstring(X)
-    #define MAX_CHAR 65536
+    #define MAX_CHAR 65535
 #else
     typedef char char_t;
     typedef std::string string_t;

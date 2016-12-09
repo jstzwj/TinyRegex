@@ -292,10 +292,18 @@ namespace tyre
                 default:
                     range->rangles.push_back(CharRange(pattern[curpos],pattern[curpos],false));
                 }
+                ++curpos;
+                return range;
+            }
+            else if(this->isChar(pattern,curpos,T('.')))
+            {
+                ExpCharRange * range=new ExpCharRange;
+                range->rangles.push_back(CharRange(1,MAX_CHAR));
                 return range;
             }
             else
             {
+                //not char and rollback
                 switch(pattern[curpos])
                 {
                 case T('('):
@@ -311,6 +319,7 @@ namespace tyre
                 default:
                     break;
                 }
+                //other char
                 ExpCharRange * range=new ExpCharRange;
                 range->rangles.push_back(CharRange(pattern[curpos],pattern[curpos],false));
                 ++curpos;

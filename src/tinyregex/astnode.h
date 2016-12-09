@@ -8,26 +8,68 @@
 
 namespace tyre
 {
+    /**
+     * @brief The ExpBase class
+     * @date 2016-12-9
+     * @author wangjun
+     * @details This class is the base class of every abstract syntax tree node.
+     */
     class ExpBase
     {
     public:
+        /**
+         * @brief ExpBase constructor
+         * @details Empty function
+         */
         ExpBase(){}
-        virtual void release(){}
+        /**
+         * @brief Release memory
+         * @details The method is used to release the memory of the objects implemented from the class.
+         *          The abstract method will release pointers which they owned recursively.
+         * @deprecated Because the deconstructor will release automatically, calling it manually is not a good way.
+         */
+        virtual void release()=0;
+        /**
+         * @brief generate automaton
+         * @param A pointer referenced to a graph(class Automaton)
+         * @return a NfaGraph object,related to the graph.
+         */
         virtual NfaGraph generate(Automaton * graph)=0;
+        /**
+         * @brief ~ExpBase
+         * @details It is used to release the memory.The abstract method will release pointers which they owned recursively.
+         */
         virtual ~ExpBase(){}
     };
+    /**
+     * @brief The ExpOr class
+     * @date 2016-12-9
+     * @author wangjun
+     * @details
+     */
     class ExpOr:public ExpBase
     {
     public:
+        /**
+         * @brief ExpOr
+         * @inherits ExpBase
+         * @details Init the left and right pointer with nullptr.
+         */
         ExpOr():ExpBase(),left(nullptr),right(nullptr){}
         ExpBase * left;
         ExpBase * right;
         virtual void release()
         {
             if(left!=nullptr)
+            {
                 left->release();
+                left=nullptr;
+            }
             if(right!=nullptr)
+            {
                 right->release();
+                right=nullptr;
+            }
             delete this;
         }
 
@@ -49,7 +91,13 @@ namespace tyre
 
             return result;
         }
-        virtual ~ExpOr(){}
+        virtual ~ExpOr()
+        {
+            if(left!=nullptr)
+                delete left;
+            if(right!=nullptr)
+                delete right;
+        }
     };
     class ExpAnd:public ExpBase
     {
@@ -60,9 +108,15 @@ namespace tyre
         virtual void release()
         {
             if(left!=nullptr)
+            {
                 left->release();
+                left=nullptr;
+            }
             if(right!=nullptr)
+            {
                 right->release();
+                right=nullptr;
+            }
             delete this;
         }
         virtual NfaGraph generate(Automaton * graph)
@@ -78,7 +132,13 @@ namespace tyre
             result.end=rightGraph.end;
             return result;
         }
-        virtual ~ExpAnd(){}
+        virtual ~ExpAnd()
+        {
+            if(left!=nullptr)
+                delete left;
+            if(right!=nullptr)
+                delete right;
+        }
     };
     /**
     *函数种类：
@@ -107,7 +167,10 @@ namespace tyre
         virtual void release()
         {
             if(subexp!=nullptr)
+            {
                 subexp->release();
+                subexp=nullptr;
+            }
             delete this;
         }
         virtual NfaGraph generate(Automaton * graph)
@@ -118,7 +181,11 @@ namespace tyre
 
             return result;
         }
-        virtual ~ExpFunction(){}
+        virtual ~ExpFunction()
+        {
+            if(subexp!=nullptr)
+                delete subexp;
+        }
     };
     /*
     class ExpUnit:public ExpBase
@@ -173,7 +240,10 @@ namespace tyre
         virtual void release()
         {
             if(exp!=nullptr)
+            {
                 exp->release();
+                exp=nullptr;
+            }
             delete this;
         }
         virtual NfaGraph generate(Automaton * graph)
@@ -201,7 +271,7 @@ namespace tyre
             {
                 NfaGraph infiniteLoop=exp->generate(graph);
                 graph->addEmptyTransition(result.end,infiniteLoop.begin);
-                graph->addEmptyTransition(infiniteLoop.end,result.begin);
+                graph->addEmptyTransition(infiniteLoop.end,result.end);
             }
             else
             {
@@ -219,7 +289,11 @@ namespace tyre
             //graph->addLoop(result.begin,result.end);
             return result;
         }
-        virtual ~ExpLoop(){}
+        virtual ~ExpLoop()
+        {
+            if(exp!=nullptr)
+                delete exp;
+        }
     };
 
 }

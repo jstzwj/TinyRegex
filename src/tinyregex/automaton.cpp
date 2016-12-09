@@ -8,6 +8,18 @@ namespace tyre
 
     }
 
+    Automaton::~Automaton()
+    {
+        for(unsigned int i=0;i<states.size();++i)
+        {
+            delete states[i];
+        }
+        for(unsigned int i=0;i<transitions.size();++i)
+        {
+            delete transitions[i];
+        }
+    }
+
     State *Automaton::addState()
     {
         State * newState=new State;

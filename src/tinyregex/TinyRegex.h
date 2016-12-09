@@ -12,12 +12,13 @@ namespace tyre {
     public:
         TinyRegex();
         TinyRegex(const string_t& pattern);
+        ~TinyRegex();
         void compile(const string_t& pattern);
         bool match(const string_t & str);
     private:
         ExpBase * root;
         Automaton * graph;
-        NfaGraph * nfa;
+        NfaGraph nfa;
     };
 }
 

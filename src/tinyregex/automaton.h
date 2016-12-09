@@ -150,6 +150,7 @@ namespace tyre
     {
     public:
         Automaton();
+        ~Automaton();
         std::vector<State *> states;
         std::vector<Transition *> transitions;
         //interfaces

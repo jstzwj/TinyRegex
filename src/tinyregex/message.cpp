@@ -7,7 +7,7 @@ namespace tyre
     }
 
     Message::Message(const string_t &content, int row_, int col_, MessageType type_)
-        :msgContent(content),row(row_),col(col_),type(type_)
+        :type(type_),msgContent(content),row(row_),col(col_)
     {
 
     }
