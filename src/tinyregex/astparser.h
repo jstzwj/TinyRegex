@@ -4,9 +4,25 @@
 #include"base.h"
 #include"astnode.h"
 #include"message.h"
-
+/**
+ *  The BNF of regex:
+ *  Char : #A character#
+ *  Number : #A number#
+ *  SeqChar : Char "-" Char
+ *  CharSet : "[" ["^"] {SeqChar|Char} "]" | "." | Char
+ *  Loop : "{" [Number] "," [Number] "}" | "+" | "*" | NULL
+ *  Unit :  (CharSet | "("Exp")") Loop
+ *  Sequence : Unit { Unit }
+ *  Exp : Sequence { "|" Sequence }
+ */
 namespace tyre
 {
+    /**
+     * @brief The AstParser class
+     * @author wangjun
+     * @date 2016-12-9
+     * @details The class is used to parse the regular expression to the abstract syntax tree.
+     */
     class AstParser
     {
     public:
@@ -20,7 +36,7 @@ namespace tyre
         ExpBase * parseUnit(const string_t & pattern,int &curpos);
         ExpBase * parseFunction(const string_t & pattern,int &curpos);
         ExpBase * parseLoop(const string_t & pattern,int &curpos);
-        ExpBase * parseSeqChar(const string_t & pattern,int &curpos);
+        bool parseSeqChar(const string_t & pattern, int &curpos, CharRange *charRange);
         ExpBase * parseCharSet(const string_t & pattern,int &curpos);
         //tools
         bool isChar(const string_t & pattern,int &curpos,char_t c)

@@ -56,8 +56,16 @@ namespace tyre
          * @details Init the left and right pointer with nullptr.
          */
         ExpOr():ExpBase(),left(nullptr),right(nullptr){}
+        /**
+         * @brief left and right
+         * @details represent two parts beside the operator '|'
+         */
         ExpBase * left;
         ExpBase * right;
+        /**
+         * @brief release
+         * @inherits
+         */
         virtual void release()
         {
             if(left!=nullptr)
@@ -72,7 +80,10 @@ namespace tyre
             }
             delete this;
         }
-
+        /**
+         * @brief generate
+         * @inherits
+         */
         virtual NfaGraph generate(Automaton * graph)
         {
             NfaGraph leftGraph,rightGraph,result;
@@ -91,6 +102,10 @@ namespace tyre
 
             return result;
         }
+        /**
+         * @brief ~ExpOr
+         * @inherits
+         */
         virtual ~ExpOr()
         {
             if(left!=nullptr)
@@ -217,15 +232,20 @@ namespace tyre
     class ExpCharRange:public ExpBase
     {
     public:
+        ExpCharRange():isInverse(false){}
         std::vector<CharRange> rangles;
+        bool isInverse;
         virtual void release(){delete this;}
         virtual NfaGraph generate(Automaton * graph)
         {
             NfaGraph result;
             result.begin=graph->addState();
             result.end=graph->addState();
-            //以后加入集合划分
-            graph->addCharRange(result.begin,result.end,*rangles.begin());
+            //加入集合划分
+            for(unsigned int i=0;i<rangles.size();++i)
+            {
+                graph->addCharRange(result.begin,result.end,rangles[i]);
+            }
             return result;
         }
         virtual ~ExpCharRange(){}

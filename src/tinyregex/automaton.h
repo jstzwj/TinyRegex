@@ -21,14 +21,15 @@ namespace tyre
     class CharRange
     {
     public:
-        CharRange(){}
+        CharRange()
+            :charBegin(0),charEnd(0),isInverse(false){}
         CharRange(char_t begin,char_t end,bool inverse=false)
             :charBegin(begin),charEnd(end),isInverse(inverse) {}
         char_t charBegin;
         char_t charEnd;
         bool isInverse;
 
-        bool isSubSet(int element)
+        bool isSubSet(char_t element)
         {
             bool result;
             if(element>=charBegin&&element<=charEnd)

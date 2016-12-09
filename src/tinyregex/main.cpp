@@ -106,7 +106,22 @@ int main(int argc, char *argv[])
     assert(false==r.match(T("aba")));
     assert(true==r.match(T("abab")));
 
+    //char range test
+    r.compile(T("[1237-9---]"));
+    assert(true==r.match(T("1")));
+    assert(false==r.match(T("4")));
+    assert(true==r.match(T("8")));
+    assert(true==r.match(T("7")));
+    assert(true==r.match(T("-")));
+    assert(false==r.match(T("a")));
+    assert(false==r.match(T("abc")));
 
+    //complex test
+    r.compile(T("(\\+|-)?[0-9]+"));
+    assert(true==r.match(T("+12")));
+    assert(true==r.match(T("-23")));
+    assert(true==r.match(T("1234")));
+    assert(false==r.match(T("123-3")));
 
 
 

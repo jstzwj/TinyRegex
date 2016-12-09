@@ -220,6 +220,29 @@ namespace tyre
         return loop;
     }
 
+    bool AstParser::parseSeqChar(const string_t &pattern, int &curpos,CharRange *charRange)
+    {
+
+        if((unsigned int)(curpos)<pattern.length()-2&&curpos>=0)
+        {
+            if(pattern[curpos+1]==T('-'))
+            {
+                charRange->charBegin=pattern[curpos];
+                charRange->charEnd=pattern[curpos+2];
+                curpos+=3;
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+        else
+        {
+            return false;
+        }
+    }
+
     ExpBase *AstParser::parseCharSet(const string_t &pattern, int &curpos)
     {
         int savePos=curpos;
@@ -230,9 +253,40 @@ namespace tyre
         }
         if(this->isChar(pattern,curpos,T('[')))
         {
-            //暂时不做
-            curpos=savePos;
-            return nullptr;
+            ExpCharRange * range=new ExpCharRange;
+            //isInverse
+            if(this->isChar(pattern,curpos,T('^')))
+            {
+                range->isInverse=true;
+            }
+            CharRange curRange;
+            while ((unsigned int)(curpos)<pattern.length())
+            {
+                if(!isChar(pattern,curpos,T(']')))
+                {
+                    if(parseSeqChar(pattern,curpos,&curRange))
+                    {
+                        range->rangles.push_back(curRange);
+                    }
+                    else
+                    {
+                        curRange.charBegin=pattern[curpos];
+                        curRange.charEnd=pattern[curpos];
+                        range->rangles.push_back(curRange);
+                        ++curpos;
+                    }
+                }
+                else
+                {
+                    break;
+                }
+                if((unsigned int)(curpos)>=pattern.length())
+                {
+                    curpos=savePos;
+                    throw "Expected the right bracket";
+                }
+            }
+            return range;
         }
         else
         {
