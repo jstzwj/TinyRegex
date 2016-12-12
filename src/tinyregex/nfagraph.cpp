@@ -5,5 +5,11 @@ namespace tyre
     {
 
     }
+
+    void NfaGraph::applyToAutomaton(Automaton *automaton)
+    {
+        this->end->isEndState=true;
+        automaton->beginState=this->begin;
+    }
 }
 

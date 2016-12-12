@@ -40,13 +40,14 @@ namespace tyre
         graph=new Automaton;
 
         nfa=root->generate(graph);
-        nfa.end->isEndState=true;
+        nfa.applyToAutomaton(graph);
+
         return;
     }
 
     bool TinyRegex::match(const tyre::string_t &str)
     {
-        return nfa.begin->match(str,0);
+        return graph->beginState->match(str,0);
     }
 }
 

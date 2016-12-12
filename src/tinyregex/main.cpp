@@ -2,6 +2,10 @@
 #include"tinyregex.h"
 #include<cassert>
 
+#include<ctime>
+#include<regex>
+
+
 using namespace std;
 using namespace tyre;
 
@@ -116,6 +120,20 @@ int main(int argc, char *argv[])
     assert(false==r.match(T("a")));
     assert(false==r.match(T("abc")));
 
+    //begin and end position of string test
+    r.compile(T("^123$"));
+    assert(true==r.match(T("123")));
+    assert(false==r.match(T("12")));
+    assert(false==r.match(T("23")));
+    assert(false==r.match(T("\n123\n")));
+
+    r.compile(T("^123$\\n23"));
+    assert(false==r.match(T("123")));
+    assert(false==r.match(T("12")));
+    assert(false==r.match(T("23")));
+    assert(true==r.match(T("123\n23")));
+
+
     //complex test
     r.compile(T("(\\+|-)?[0-9]+"));
     assert(true==r.match(T("+12")));
@@ -124,56 +142,32 @@ int main(int argc, char *argv[])
     assert(false==r.match(T("123-3")));
 
 
+    //compare with c++ regex
+    int n=100000;
+    clock_t s,e;
 
+    s=clock();
+    std::regex re1("(\\+|-)?[0-9]+");
+    std::cmatch mat;
+    //std::string s("264236154619561931697837947+s");
+    for(int i=0;i<n;++i)
+    {
+        //std::regex re1("(\\+|-)?[0-9]+");
+        std::regex_match("264236154619561931697837947+s",mat,re1);
+    }
+    e=clock();
+    std::cout<<"case1:\ntime:\n"<<e-s<<std::endl;
 
+    s=clock();
+    TinyRegex re2(T("(\\+|-)?[0-9]+"));
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    for(int i=0;i<n;++i)
+    {
+        //TinyRegex re2(T("(\\+|-)?[0-9]+"));
+        re2.match(T("264236154619561931697837947+s"));
+    }
+    e=clock();
+    std::cout<<"case2:\ntime:\n"<<e-s<<std::endl;
 
 
     std::cout<<"Pass all tests."<<std::endl;

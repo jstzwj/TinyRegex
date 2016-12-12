@@ -15,6 +15,8 @@ namespace tyre
     public:
         State * begin;
         State * end;
+    public:
+        void applyToAutomaton(Automaton *automaton);
     };
 }
 

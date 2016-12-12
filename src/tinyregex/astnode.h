@@ -45,7 +45,7 @@ namespace tyre
      * @brief The ExpOr class
      * @date 2016-12-9
      * @author wangjun
-     * @details
+     * @details This class represents the operator '|'.
      */
     class ExpOr:public ExpBase
     {
@@ -114,6 +114,12 @@ namespace tyre
                 delete right;
         }
     };
+    /**
+     * @brief The ExpAnd class
+     * @date 2016-12-10
+     * @author wangjun
+     * @details This class represents the invisible operator '&', which is used to connect two characters.
+     */
     class ExpAnd:public ExpBase
     {
     public:
@@ -249,6 +255,36 @@ namespace tyre
             return result;
         }
         virtual ~ExpCharRange(){}
+    };
+    class ExpBeginString:public ExpBase
+    {
+    public:
+        ExpBeginString(){}
+        virtual void release(){delete this;}
+        virtual NfaGraph generate(Automaton * graph)
+        {
+            NfaGraph result;
+            result.begin=graph->addState();
+            result.end=graph->addState();
+            graph->addBeginString(result.begin,result.end);
+            return result;
+        }
+        virtual ~ExpBeginString(){}
+    };
+    class ExpEndString:public ExpBase
+    {
+    public:
+        ExpEndString(){}
+        virtual void release(){delete this;}
+        virtual NfaGraph generate(Automaton * graph)
+        {
+            NfaGraph result;
+            result.begin=graph->addState();
+            result.end=graph->addState();
+            graph->addEndString(result.begin,result.end);
+            return result;
+        }
+        virtual ~ExpEndString(){}
     };
     class ExpLoop:public ExpBase
     {

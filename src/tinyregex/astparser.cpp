@@ -355,6 +355,16 @@ namespace tyre
                 range->rangles.push_back(CharRange(1,MAX_CHAR));
                 return range;
             }
+            else if(this->isChar(pattern,curpos,T('^')))
+            {
+                ExpBeginString * range=new ExpBeginString;
+                return range;
+            }
+            else if(this->isChar(pattern,curpos,T('$')))
+            {
+                ExpEndString * range=new ExpEndString;
+                return range;
+            }
             else
             {
                 //not char and rollback

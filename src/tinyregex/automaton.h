@@ -1,6 +1,7 @@
 #ifndef AUTOMATON_H
 #define AUTOMATON_H
 #include<vector>
+#include<map>
 #include"base.h"
 
 namespace tyre
@@ -15,26 +16,49 @@ namespace tyre
         CHARS,
         EMPTY,
         LOOP,
+        BEGINSTRING,
+        ENDSTRING,
         END
     };
-    //表示一个字符串的范围
+    /**
+     * @brief The CharRange class
+     * @date 2016-12-10
+     * @author wangjun
+     * @details This class represent a range of character.
+     */
     class CharRange
     {
     public:
+        /**
+         * @brief CharRange
+         * @details Initialize charBegin,charEnd and isInverse.
+         */
         CharRange()
             :charBegin(0),charEnd(0),isInverse(false){}
+        /**
+         * @brief CharRange
+         * @param begin --The begin of character range.The range contains it.
+         * @param end   --The end of character range.The range contains it.
+         * @param inverse
+         * @details This constructor function provides the params for charBegin and charEnd.IsInverse is a default param.
+         */
         CharRange(char_t begin,char_t end,bool inverse=false)
             :charBegin(begin),charEnd(end),isInverse(inverse) {}
+
         char_t charBegin;
         char_t charEnd;
         bool isInverse;
 
         bool isSubSet(char_t element)
         {
-            bool result;
+            bool result(false);
             if(element>=charBegin&&element<=charEnd)
             {
                 result=true;
+            }
+            else
+            {
+                result=false;
             }
             if(isInverse==true)
             {
@@ -43,6 +67,12 @@ namespace tyre
             return result;
         }
     };
+    /**
+     * @brief The LoopRange class
+     * @date 2016-12-10
+     * @author wangjun
+     * @details This class represent a range of loop.
+     */
     class LoopRange
     {
     public:
@@ -55,7 +85,7 @@ namespace tyre
 
         bool isSubSet(int element)
         {
-            bool result;
+            bool result(false);
             if(element>=loopBegin&&element<=loopEnd)
             {
                 result=true;
@@ -63,6 +93,10 @@ namespace tyre
             else if(element>=loopBegin&&loopEnd==-1)
             {
                 result=true;
+            }
+            else
+            {
+                result=false;
             }
             if(isInverse==true)
             {
@@ -105,47 +139,7 @@ namespace tyre
         bool isEndState;
         int edgeLock;
 
-        bool match(const string_t str,int pos)
-        {
-            bool result(false);
-            if((unsigned int)pos==str.length())
-            {
-                if(isEndState==true)
-                {
-                    return true;
-                }
-            }
-            if((unsigned int)pos>str.length())
-            {
-                return false;
-            }
-            for(unsigned int i=0;i<out.size();++i)
-            {
-                switch(out[i]->type)
-                {
-                case TransitionType::CHARS:
-                    if(out[i]->range.isSubSet(str[pos])||
-                            out[i]->type==TransitionType::EMPTY)
-                    {
-                        if(out[i]->target->match(str,pos+1))
-                        {
-                            result = true;
-                        }
-                    }
-                    break;
-                case TransitionType::EMPTY:
-                    if(out[i]->target->match(str,pos))
-                    {
-                        result = true;
-                    }
-                    break;
-                default:
-                    break;
-                }
-            }
-
-            return result;
-        }
+        bool match(const string_t str,int pos);
     };
     class Automaton
     {
@@ -154,6 +148,7 @@ namespace tyre
         ~Automaton();
         std::vector<State *> states;
         std::vector<Transition *> transitions;
+        State * beginState;
         //interfaces
         State * addState();
         Transition *addCharRange(State * start,State * end,CharRange range);
@@ -161,6 +156,10 @@ namespace tyre
         Transition *addEmptyTransition(State * start,State * end);
         Transition *addLoop(State * start, State * end);//empty
         Transition *addLoop(State *start, State *end, CharRange range);
+        Transition *addBeginString(State *start, State *end);
+        Transition *addEndString(State *start, State *end);
+        //static member functions
+        static Automaton NfaSimplification(const Automaton& automaton);
     };
 }
 
