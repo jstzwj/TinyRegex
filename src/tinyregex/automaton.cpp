@@ -91,14 +91,14 @@ namespace tyre
 
 
 
-    Automaton Automaton::NfaSimplification(const Automaton &automaton)
+    Automaton Automaton::NfaToDfa(const Automaton &automaton)
     {
-        Automaton result;
-        std::map<State *,State *> stateMap;
+        Automaton dfa;
 
+        return dfa;
     }
 
-    bool State::match(const string_t str, int pos)
+    bool State::match(const string_t &str, int pos)
     {
         bool result(false);
         if((unsigned int)pos==str.length())
@@ -180,8 +180,101 @@ namespace tyre
             default:
                 break;
             }
+            if(result==true)
+            {
+                break;
+            }
+        }
+        return result;
+    }
+
+    bool State::search(const string_t &str, int pos, int * endPos)
+    {
+        bool result(false);
+
+        if(isEndState==true)
+        {
+            *endPos=pos;
+            return true;
         }
 
+        if((unsigned int)pos>str.length())
+        {
+            return false;
+        }
+        for(unsigned int i=0;i<out.size();++i)
+        {
+            switch(out[i]->type)
+            {
+            case TransitionType::CHARS:
+                if(out[i]->range.isSubSet(str[pos])||
+                        out[i]->type==TransitionType::EMPTY)
+                {
+                    if(out[i]->target->search(str,pos+1,endPos))
+                    {
+                        result = true;
+                    }
+                }
+                break;
+            case TransitionType::EMPTY:
+                if(out[i]->target->search(str,pos,endPos))
+                {
+                    result = true;
+                }
+                break;
+            case TransitionType::BEGINSTRING:
+                if(pos>0)
+                {
+                    if(str[pos-1]==T('\n')||str[pos-1]==T('\n'))
+                    {
+                        if(out[i]->target->search(str,pos,endPos))
+                        {
+                            result = true;
+                        }
+                    }
+                }
+                else
+                {
+                    if(pos==0)
+                    {
+                        if(out[i]->target->search(str,pos,endPos))
+                        {
+                            result = true;
+                        }
+                    }
+                }
+                break;
+            case TransitionType::ENDSTRING:
+                if((unsigned int)pos<str.length())
+                {
+                    //有点反直觉啊。。。以后改
+                    if(str[pos]==T('\n')||str[pos]==T('\n'))
+                    {
+                        if(out[i]->target->search(str,pos,endPos))
+                        {
+                            result = true;
+                        }
+                    }
+                }
+                else
+                {
+                    if((unsigned int)pos==str.length())
+                    {
+                        if(out[i]->target->search(str,pos,endPos))
+                        {
+                            result = true;
+                        }
+                    }
+                }
+                break;
+            default:
+                break;
+            }
+            if(result==true)
+            {
+                break;
+            }
+        }
         return result;
     }
 

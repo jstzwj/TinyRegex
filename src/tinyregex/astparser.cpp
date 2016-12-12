@@ -392,5 +392,101 @@ namespace tyre
         }
     }
 
+    bool AstParser::isChar(const string_t &pattern, int &curpos, char_t c)
+    {
+        if((unsigned int)curpos>=pattern.length()||curpos<0)
+        {
+            return false;
+        }
+        if(pattern[curpos]==c)
+        {
+            ++curpos;
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    bool AstParser::isStr(const string_t &pattern, int &curpos, const string_t &str)
+    {
+        int postmp=curpos;
+        int pattern_len=pattern.length();
+        int str_len=str.length();
+        while(postmp<pattern_len&&postmp<str_len)
+        {
+            if(pattern[postmp]!=str[postmp])
+            {
+                break;
+            }
+            ++postmp;
+        }
+        if(postmp==str_len)
+        {
+            curpos=postmp;
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    int AstParser::getPositiveInt(const string_t &pattern, int &curpos)
+    {
+        int result=0;
+        if(curpos<0)
+        {
+            return -1;
+        }
+        if(!(pattern[curpos]>=T('0')&&pattern[curpos]<=T('9')))
+        {
+            return -1;
+        }
+        while((unsigned int)curpos<pattern.length())
+        {
+            if(!(pattern[curpos]>=T('0')&&pattern[curpos]<=T('9')))
+            {
+                break;
+            }
+            else
+            {
+                result*=10;
+                result+=pattern[curpos]-T('0');
+            }
+            ++curpos;
+        }
+        return result;
+    }
+
+    int AstParser::getTokenLength(const string_t &pattern, int &curpos)
+    {
+        int pos=curpos;
+        while(
+              (pattern[pos]>T('A')&&pattern[pos]<T('Z'))||
+              (pattern[pos]>T('a')&&pattern[pos]<T('z'))||
+              (pattern[pos]>=T('0')&&pattern[pos]<=T('9'))||
+              (pattern[pos]==T('_'))
+              )
+        {
+            ++pos;
+        }
+        return pos-curpos;
+    }
+
+    bool AstParser::consume(const string_t &pattern, int &curpos)
+    {
+        if(static_cast<unsigned int>(curpos)<pattern.length())
+        {
+            ++curpos;
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
 
 }

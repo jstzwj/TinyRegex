@@ -12,6 +12,11 @@ namespace tyre
     {
         compile(pattern);
     }
+    TinyRegex::TinyRegex(const char_t * pattern)
+        :root(nullptr),graph(nullptr)
+    {
+        compile(pattern);
+    }
 
     TinyRegex::~TinyRegex()
     {
@@ -25,7 +30,7 @@ namespace tyre
         }
     }
 
-    void TinyRegex::compile(const tyre::string_t &pattern)
+    void TinyRegex::compile(const string_t &pattern)
     {
         AstParser parser;
         if(root!=nullptr)
@@ -39,7 +44,9 @@ namespace tyre
         }
         graph=new Automaton;
 
-        nfa=root->generate(graph);
+        nfa.begin=graph->addState();
+        nfa.end=graph->addState();
+        root->generate(graph,nfa);
         nfa.applyToAutomaton(graph);
 
         return;
@@ -49,6 +56,21 @@ namespace tyre
     {
         return graph->beginState->match(str,0);
     }
+
+    RegexResult TinyRegex::search(const string_t &str)
+    {
+        RegexResult result;
+        int endPos;
+        for(unsigned int i=0;i<str.length();++i)
+        {
+            if(graph->beginState->search(str,i,&endPos)==true)
+            {
+                result.captureResult.push_back(RegexPosition(i,endPos));
+            }
+        }
+        return result;
+    }
+
 }
 
 

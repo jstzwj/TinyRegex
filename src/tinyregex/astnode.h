@@ -34,7 +34,7 @@ namespace tyre
          * @param A pointer referenced to a graph(class Automaton)
          * @return a NfaGraph object,related to the graph.
          */
-        virtual NfaGraph generate(Automaton * graph)=0;
+        virtual void generate(Automaton * graph,NfaGraph result)=0;
         /**
          * @brief ~ExpBase
          * @details It is used to release the memory.The abstract method will release pointers which they owned recursively.
@@ -84,23 +84,10 @@ namespace tyre
          * @brief generate
          * @inherits
          */
-        virtual NfaGraph generate(Automaton * graph)
+        virtual void generate(Automaton * graph,NfaGraph result)
         {
-            NfaGraph leftGraph,rightGraph,result;
-
-            result.begin=graph->addState();
-            result.end=graph->addState();
-
-            leftGraph=left->generate(graph);
-            rightGraph=right->generate(graph);
-
-            graph->addEmptyTransition(result.begin,leftGraph.begin);
-            graph->addEmptyTransition(result.begin,rightGraph.begin);
-
-            graph->addEmptyTransition(leftGraph.end,result.end);
-            graph->addEmptyTransition(rightGraph.end,result.end);
-
-            return result;
+            left->generate(graph,result);
+            right->generate(graph,result);
         }
         /**
          * @brief ~ExpOr
@@ -140,18 +127,19 @@ namespace tyre
             }
             delete this;
         }
-        virtual NfaGraph generate(Automaton * graph)
+        virtual void generate(Automaton * graph,NfaGraph result)
         {
-            NfaGraph leftGraph,rightGraph,result;
+            NfaGraph leftGraph,rightGraph;
+            State * midState=graph->addState();
 
-            leftGraph=left->generate(graph);
-            rightGraph=right->generate(graph);
+            leftGraph.begin=result.begin;
+            leftGraph.end=midState;
+            left->generate(graph,leftGraph);
 
-            graph->addEmptyTransition(leftGraph.end,rightGraph.begin);
+            rightGraph.begin=midState;
+            rightGraph.end=result.end;
+            right->generate(graph,rightGraph);
 
-            result.begin=leftGraph.begin;
-            result.end=rightGraph.end;
-            return result;
         }
         virtual ~ExpAnd()
         {
@@ -194,13 +182,11 @@ namespace tyre
             }
             delete this;
         }
-        virtual NfaGraph generate(Automaton * graph)
+        virtual void generate(Automaton * graph,NfaGraph result)
         {
-            NfaGraph result;
+            //以后在这里添加捕获功能
+            subexp->generate(graph,result);
 
-            result=subexp->generate(graph);
-
-            return result;
         }
         virtual ~ExpFunction()
         {
@@ -242,17 +228,13 @@ namespace tyre
         std::vector<CharRange> rangles;
         bool isInverse;
         virtual void release(){delete this;}
-        virtual NfaGraph generate(Automaton * graph)
+        virtual void generate(Automaton * graph,NfaGraph result)
         {
-            NfaGraph result;
-            result.begin=graph->addState();
-            result.end=graph->addState();
             //加入集合划分
             for(unsigned int i=0;i<rangles.size();++i)
             {
                 graph->addCharRange(result.begin,result.end,rangles[i]);
             }
-            return result;
         }
         virtual ~ExpCharRange(){}
     };
@@ -261,13 +243,9 @@ namespace tyre
     public:
         ExpBeginString(){}
         virtual void release(){delete this;}
-        virtual NfaGraph generate(Automaton * graph)
+        virtual void generate(Automaton * graph,NfaGraph result)
         {
-            NfaGraph result;
-            result.begin=graph->addState();
-            result.end=graph->addState();
             graph->addBeginString(result.begin,result.end);
-            return result;
         }
         virtual ~ExpBeginString(){}
     };
@@ -276,13 +254,9 @@ namespace tyre
     public:
         ExpEndString(){}
         virtual void release(){delete this;}
-        virtual NfaGraph generate(Automaton * graph)
+        virtual void generate(Automaton * graph,NfaGraph result)
         {
-            NfaGraph result;
-            result.begin=graph->addState();
-            result.end=graph->addState();
             graph->addEndString(result.begin,result.end);
-            return result;
         }
         virtual ~ExpEndString(){}
     };
@@ -302,48 +276,60 @@ namespace tyre
             }
             delete this;
         }
-        virtual NfaGraph generate(Automaton * graph)
+        void generateMustLoop(Automaton *graph, NfaGraph result)
         {
-            NfaGraph result;
-            if(min>=1)
+            State *beginState(result.begin);
+            State *midState(nullptr);
+            if(min==0)
             {
-                result=exp->generate(graph);
-                for(int i=1;i<min;++i)
+                graph->addEmptyTransition(result.begin,result.end);
+            }
+            for(int i=0;i<min;++i)
+            {
+                if(i==min-1)
                 {
-                    NfaGraph copy=exp->generate(graph);
-                    graph->addEmptyTransition(result.end,copy.begin);
-                    result.end=copy.end;
+                    midState=result.end;
                 }
+                else
+                {
+                    midState=graph->addState();
+                }
+                exp->generate(graph,NfaGraph(beginState,midState));
+                beginState=midState;
             }
-            else
+        }
+        void generateAltLoop(Automaton *graph, NfaGraph result)
+        {
+            State *beginState(result.begin);
+            State *midState(nullptr);
+            for(int i=min;i<max;++i)
             {
-                State *emptyNode=graph->addState();
-                result.begin=emptyNode;
-                result.end=emptyNode;
+                if(i==max-1)
+                    midState=result.end;
+                else
+                    midState=graph->addState();
+                exp->generate(graph,NfaGraph(beginState,midState));
+                graph->addEmptyTransition(beginState,result.end);
+                beginState=midState;
             }
-
-
+        }
+        void generateInfiniteLoop(Automaton *graph, NfaGraph result)
+        {
+            graph->addEmptyTransition(result.begin,result.end);
+            exp->generate(graph,NfaGraph(result.end,result.begin));
+        }
+        virtual void generate(Automaton * graph,NfaGraph result)
+        {
+            State* midState=graph->addState();
+            this->generateMustLoop(graph,NfaGraph(result.begin,midState));
             if(max==-1)
             {
-                NfaGraph infiniteLoop=exp->generate(graph);
-                graph->addEmptyTransition(result.end,infiniteLoop.begin);
-                graph->addEmptyTransition(infiniteLoop.end,result.end);
+                this->generateInfiniteLoop(graph,NfaGraph(midState,result.end));
             }
             else
             {
-                State *tmpEnd=graph->addState();
-                for(int i=min;i<max;++i)
-                {
-                    NfaGraph copy=exp->generate(graph);
-                    graph->addEmptyTransition(copy.begin,tmpEnd);
-                    graph->addEmptyTransition(result.end,copy.begin);
-                    result.end=copy.end;
-                }
-                graph->addEmptyTransition(result.end,tmpEnd);
-                result.end=tmpEnd;
+                this->generateAltLoop(graph,NfaGraph(midState,result.end));
             }
-            //graph->addLoop(result.begin,result.end);
-            return result;
         }
         virtual ~ExpLoop()
         {

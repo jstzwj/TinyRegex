@@ -134,7 +134,7 @@ int main(int argc, char *argv[])
     assert(true==r.match(T("123\n23")));
 
 
-    //complex test
+    //complex march test
     r.compile(T("(\\+|-)?[0-9]+"));
     assert(true==r.match(T("+12")));
     assert(true==r.match(T("-23")));
@@ -142,29 +142,51 @@ int main(int argc, char *argv[])
     assert(false==r.match(T("123-3")));
 
 
+    //single character search test
+    r.compile(T("a"));
+    RegexResult set=r.search(T("abcadaarta"));
+    assert(0==set.captureResult[0].begin);
+    assert(3==set.captureResult[1].begin);
+    assert(5==set.captureResult[2].begin);
+    assert(6==set.captureResult[3].begin);
+
+
+
+
+
+
+
+
+
+
+
     //compare with c++ regex
-    int n=100000;
+    int n=1000000;
     clock_t s,e;
 
     s=clock();
-    std::regex re1("(\\+|-)?[0-9]+");
-    std::cmatch mat;
-    //std::string s("264236154619561931697837947+s");
+    std::regex re1("finance\\.sina\\.cn|stock1\\.sina\\.cn|3g\\.sina\\.com\\.cn.*(channel=finance|_finance$|ch=stock|/stock/)|dp\\.sina\\.cn/.*ch=9&");
+    std::cmatch cmat;
+    std::smatch smat;
     for(int i=0;i<n;++i)
     {
         //std::regex re1("(\\+|-)?[0-9]+");
-        std::regex_match("264236154619561931697837947+s",mat,re1);
+        std::regex_search("finance.sina.cn/google.com/baidu.com.google.sina.cn",re1);
+        std::regex_search("3g.com.sina.cn.google.com.baidu.com.sina.egooooooooo",re1);
+        std::regex_search("http://3g.sina.com.cn/google.baiduchannel=financegogo",re1);
     }
     e=clock();
     std::cout<<"case1:\ntime:\n"<<e-s<<std::endl;
 
     s=clock();
-    TinyRegex re2(T("(\\+|-)?[0-9]+"));
+    TinyRegex re2(T("finance\\.sina\\.cn|stock1\\.sina\\.cn|3g\\.sina\\.com\\.cn.*(channel=finance|_finance$|ch=stock|/stock/)|dp\\.sina\\.cn/.*ch=9&"));
 
     for(int i=0;i<n;++i)
     {
         //TinyRegex re2(T("(\\+|-)?[0-9]+"));
-        re2.match(T("264236154619561931697837947+s"));
+        re2.search(T("finance.sina.cn/google.com/baidu.com.google.sina.cn"));
+        re2.search(T("3g.com.sina.cn.google.com.baidu.com.sina.egooooooooo"));
+        re2.search(T("http://3g.sina.com.cn/google.baiduchannel=financegogo"));
     }
     e=clock();
     std::cout<<"case2:\ntime:\n"<<e-s<<std::endl;

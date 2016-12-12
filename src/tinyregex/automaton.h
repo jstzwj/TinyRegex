@@ -1,8 +1,10 @@
 #ifndef AUTOMATON_H
 #define AUTOMATON_H
 #include<vector>
+#include<list>
 #include<map>
 #include"base.h"
+#include"regexresult.h"
 
 namespace tyre
 {
@@ -139,7 +141,8 @@ namespace tyre
         bool isEndState;
         int edgeLock;
 
-        bool match(const string_t str,int pos);
+        bool match(const string_t &str, int pos);
+        bool search(const string_t &str, int pos, int *endPos);
     };
     class Automaton
     {
@@ -159,7 +162,7 @@ namespace tyre
         Transition *addBeginString(State *start, State *end);
         Transition *addEndString(State *start, State *end);
         //static member functions
-        static Automaton NfaSimplification(const Automaton& automaton);
+        static Automaton NfaToDfa(const Automaton &automaton);
     };
 }
 

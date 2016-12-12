@@ -9,6 +9,7 @@ SOURCES += main.cpp \
     message.cpp \
     automaton.cpp \
     nfagraph.cpp \
+    regexresult.cpp
 
 
 HEADERS += \
@@ -19,6 +20,7 @@ HEADERS += \
     message.h \
     automaton.h \
     nfagraph.h \
+    regexresult.h
 
 
 DISTFILES += \
