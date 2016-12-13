@@ -66,6 +66,7 @@ namespace tyre
             if(graph->beginState->search(str,i,&endPos)==true)
             {
                 result.captureResult.push_back(RegexPosition(i,endPos));
+                i=endPos;
             }
         }
         return result;

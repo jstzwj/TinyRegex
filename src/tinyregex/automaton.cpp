@@ -192,12 +192,6 @@ namespace tyre
     {
         bool result(false);
 
-        if(isEndState==true)
-        {
-            *endPos=pos;
-            return true;
-        }
-
         if((unsigned int)pos>str.length())
         {
             return false;
@@ -207,12 +201,19 @@ namespace tyre
             switch(out[i]->type)
             {
             case TransitionType::CHARS:
-                if(out[i]->range.isSubSet(str[pos])||
-                        out[i]->type==TransitionType::EMPTY)
+                if(out[i]->range.isSubSet(str[pos]))
                 {
                     if(out[i]->target->search(str,pos+1,endPos))
                     {
                         result = true;
+                    }
+                    else
+                    {
+                        if(out[i]->target->isEndState==true)
+                        {
+                            *endPos=pos;
+                            return true;
+                        }
                     }
                 }
                 break;
@@ -220,6 +221,14 @@ namespace tyre
                 if(out[i]->target->search(str,pos,endPos))
                 {
                     result = true;
+                }
+                else
+                {
+                    if(out[i]->target->isEndState==true)
+                    {
+                        *endPos=pos;
+                        return true;
+                    }
                 }
                 break;
             case TransitionType::BEGINSTRING:

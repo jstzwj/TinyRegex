@@ -141,14 +141,22 @@ int main(int argc, char *argv[])
     assert(true==r.match(T("1234")));
     assert(false==r.match(T("123-3")));
 
-
+    //=================
+    //search test
+    //=================
+    RegexResult set;
     //single character search test
     r.compile(T("a"));
-    RegexResult set=r.search(T("abcadaarta"));
+    set=r.search(T("abcadaarta"));
     assert(0==set.captureResult[0].begin);
     assert(3==set.captureResult[1].begin);
     assert(5==set.captureResult[2].begin);
     assert(6==set.captureResult[3].begin);
+    //loop search test
+    r.compile(T("a+"));
+    set=r.search(T("aaaabbaaaby"));
+    assert(0==set.captureResult[0].begin);
+    assert(6==set.captureResult[1].begin);
 
 
 
@@ -161,7 +169,7 @@ int main(int argc, char *argv[])
 
 
     //compare with c++ regex
-    int n=1000000;
+    int n=10000;
     clock_t s,e;
 
     s=clock();
