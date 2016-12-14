@@ -61,6 +61,13 @@ namespace tyre
         return newTransition;
     }
 
+    Transition *Automaton::addLazyTransition(State *start, State *end)
+    {
+        Transition * newTransition=addTransition(start,end);
+        newTransition->type=TransitionType::LAZY;
+        return newTransition;
+    }
+
     Transition *Automaton::addLoop(State *start, State *end)
     {
         Transition * newTransition=addTransition(start,end);
@@ -98,7 +105,41 @@ namespace tyre
         return dfa;
     }
 
-    bool State::match(const string_t &str, int pos)
+    bool State::match(const string_t &str, int pos, MatchFlag flag)
+    {
+        if((flag&MatchFlag::MATCH_BFS)==0)
+        {
+            matchDfs(str,pos,flag);
+        }
+        else
+        {
+            matchBfs(str,pos,flag);
+        }
+    }
+
+    bool State::search(const string_t &str, int pos, int *endPos, MatchFlag flag)
+    {
+        if((flag&MatchFlag::MATCH_BFS)==0)
+        {
+            return searchDfs(str,pos-1,pos,endPos,flag);
+        }
+        else
+        {
+            return searchBfs(str,pos-1,pos,endPos,flag);
+        }
+    }
+
+    bool State::matchBfs(const string_t &str, int pos, MatchFlag flag)
+    {
+        return true;
+    }
+
+    bool State::searchBfs(const string_t &str, int acpos, int pos, int *endPos, bool isLazy, MatchFlag flag)
+    {
+        return true;
+    }
+
+    bool State::matchDfs(const string_t &str, int pos,MatchFlag flag)
     {
         bool result(false);
         if((unsigned int)pos==str.length())
@@ -120,14 +161,14 @@ namespace tyre
                 if(out[i]->range.isSubSet(str[pos])||
                         out[i]->type==TransitionType::EMPTY)
                 {
-                    if(out[i]->target->match(str,pos+1))
+                    if(out[i]->target->matchDfs(str,pos+1,flag))
                     {
                         result = true;
                     }
                 }
                 break;
             case TransitionType::EMPTY:
-                if(out[i]->target->match(str,pos))
+                if(out[i]->target->matchDfs(str,pos,flag))
                 {
                     result = true;
                 }
@@ -137,7 +178,7 @@ namespace tyre
                 {
                     if(str[pos-1]==T('\n')||str[pos-1]==T('\n'))
                     {
-                        if(out[i]->target->match(str,pos))
+                        if(out[i]->target->matchDfs(str,pos,flag))
                         {
                             result = true;
                         }
@@ -147,7 +188,7 @@ namespace tyre
                 {
                     if(pos==0)
                     {
-                        if(out[i]->target->match(str,pos))
+                        if(out[i]->target->matchDfs(str,pos,flag))
                         {
                             result = true;
                         }
@@ -160,7 +201,7 @@ namespace tyre
                     //有点反直觉啊。。。以后改
                     if(str[pos]==T('\n')||str[pos]==T('\n'))
                     {
-                        if(out[i]->target->match(str,pos))
+                        if(out[i]->target->matchDfs(str,pos,flag))
                         {
                             result = true;
                         }
@@ -170,7 +211,7 @@ namespace tyre
                 {
                     if((unsigned int)pos==str.length())
                     {
-                        if(out[i]->target->match(str,pos))
+                        if(out[i]->target->matchDfs(str,pos,flag))
                         {
                             result = true;
                         }
@@ -188,13 +229,26 @@ namespace tyre
         return result;
     }
 
-    bool State::search(const string_t &str, int pos, int * endPos)
+    bool State::searchDfs(const string_t &str,int acpos, int pos, int * endPos,bool isLazy,MatchFlag flag)
     {
         bool result(false);
-
         if((unsigned int)pos>str.length())
         {
             return false;
+        }
+        if(isEndState==true&&acpos>=0)
+        {
+            if(isLazy==true)
+            {
+                *endPos=acpos;
+                return true;
+            }
+            else
+            {
+                if(*endPos<acpos)
+                    *endPos=acpos;
+                result=true;
+            }
         }
         for(unsigned int i=0;i<out.size();++i)
         {
@@ -203,32 +257,17 @@ namespace tyre
             case TransitionType::CHARS:
                 if(out[i]->range.isSubSet(str[pos]))
                 {
-                    if(out[i]->target->search(str,pos+1,endPos))
+                    if(out[i]->target->searchDfs(str,acpos+1,pos+1,endPos,isLazy,flag))
                     {
                         result = true;
                     }
-                    else
-                    {
-                        if(out[i]->target->isEndState==true)
-                        {
-                            *endPos=pos;
-                            return true;
-                        }
-                    }
+
                 }
                 break;
             case TransitionType::EMPTY:
-                if(out[i]->target->search(str,pos,endPos))
+                if(out[i]->target->searchDfs(str,acpos,pos,endPos,isLazy,flag))
                 {
                     result = true;
-                }
-                else
-                {
-                    if(out[i]->target->isEndState==true)
-                    {
-                        *endPos=pos;
-                        return true;
-                    }
                 }
                 break;
             case TransitionType::BEGINSTRING:
@@ -236,7 +275,7 @@ namespace tyre
                 {
                     if(str[pos-1]==T('\n')||str[pos-1]==T('\n'))
                     {
-                        if(out[i]->target->search(str,pos,endPos))
+                        if(out[i]->target->searchDfs(str,acpos,pos,endPos,isLazy,flag))
                         {
                             result = true;
                         }
@@ -246,7 +285,7 @@ namespace tyre
                 {
                     if(pos==0)
                     {
-                        if(out[i]->target->search(str,pos,endPos))
+                        if(out[i]->target->searchDfs(str,acpos,pos,endPos,isLazy,flag))
                         {
                             result = true;
                         }
@@ -259,7 +298,7 @@ namespace tyre
                     //有点反直觉啊。。。以后改
                     if(str[pos]==T('\n')||str[pos]==T('\n'))
                     {
-                        if(out[i]->target->search(str,pos,endPos))
+                        if(out[i]->target->searchDfs(str,acpos,pos,endPos,isLazy,flag))
                         {
                             result = true;
                         }
@@ -269,21 +308,24 @@ namespace tyre
                 {
                     if((unsigned int)pos==str.length())
                     {
-                        if(out[i]->target->search(str,pos,endPos))
+                        if(out[i]->target->searchDfs(str,acpos,pos,endPos,isLazy,flag))
                         {
                             result = true;
                         }
                     }
                 }
                 break;
+            case TransitionType::LAZY:
+                if(out[i]->target->searchDfs(str,acpos,pos,endPos,true,flag))
+                {
+                    result = true;
+                }
+                break;
             default:
                 break;
             }
-            if(result==true)
-            {
-                break;
-            }
         }
+
         return result;
     }
 

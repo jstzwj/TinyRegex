@@ -167,6 +167,14 @@ namespace tyre
             loop=new ExpLoop;
             loop->min=0;
             loop->max=-1;
+            if(isChar(pattern,curpos,T('?')))
+            {
+                loop->lazy=true;
+            }
+            else
+            {
+                loop->lazy=false;
+            }
             return loop;
         }
         else if(isChar(pattern,curpos,T('+')))
@@ -174,6 +182,14 @@ namespace tyre
             loop=new ExpLoop;
             loop->min=1;
             loop->max=-1;
+            if(isChar(pattern,curpos,T('?')))
+            {
+                loop->lazy=true;
+            }
+            else
+            {
+                loop->lazy=false;
+            }
             return loop;
         }
         else if(isChar(pattern,curpos,T('?')))
@@ -181,6 +197,14 @@ namespace tyre
             loop=new ExpLoop;
             loop->min=0;
             loop->max=1;
+            if(isChar(pattern,curpos,T('?')))
+            {
+                loop->lazy=true;
+            }
+            else
+            {
+                loop->lazy=false;
+            }
             return loop;
         }
         else if(isChar(pattern,curpos,T('{')))
@@ -215,6 +239,17 @@ namespace tyre
             {
                 throw T("error: expected right bracket near \'")+
                         toString(pattern[curpos])+T("\'\r\nposition: ")+toString(curpos);
+            }
+            else
+            {
+                if(isChar(pattern,curpos,T('?')))
+                {
+                    loop->lazy=true;
+                }
+                else
+                {
+                    loop->lazy=false;
+                }
             }
         }
         return loop;

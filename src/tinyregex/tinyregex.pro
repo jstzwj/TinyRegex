@@ -20,7 +20,8 @@ HEADERS += \
     message.h \
     automaton.h \
     nfagraph.h \
-    regexresult.h
+    regexresult.h \
+    attribute.h
 
 
 DISTFILES += \

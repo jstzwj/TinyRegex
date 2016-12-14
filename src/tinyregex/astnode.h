@@ -263,9 +263,10 @@ namespace tyre
     class ExpLoop:public ExpBase
     {
     public:
-        ExpLoop():ExpBase(),exp(nullptr){}
+        ExpLoop():ExpBase(),lazy(false),exp(nullptr){}
         int min;
         int max;
+        bool lazy;
         ExpBase * exp;
         virtual void release()
         {
@@ -322,6 +323,14 @@ namespace tyre
         {
             State* midState=graph->addState();
             this->generateMustLoop(graph,NfaGraph(result.begin,midState));
+
+            if(this->lazy==true)
+            {
+                State *lazyState=graph->addState();
+                graph->addLazyTransition(midState,lazyState);
+                midState=lazyState;
+            }
+
             if(max==-1)
             {
                 this->generateInfiniteLoop(graph,NfaGraph(midState,result.end));

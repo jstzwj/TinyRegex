@@ -5,6 +5,7 @@
 #include<map>
 #include"base.h"
 #include"regexresult.h"
+#include"attribute.h"
 
 namespace tyre
 {
@@ -17,7 +18,7 @@ namespace tyre
     {
         CHARS,
         EMPTY,
-        LOOP,
+        LAZY,
         BEGINSTRING,
         ENDSTRING,
         END
@@ -141,8 +142,13 @@ namespace tyre
         bool isEndState;
         int edgeLock;
 
-        bool match(const string_t &str, int pos);
-        bool search(const string_t &str, int pos, int *endPos);
+        bool match(const string_t &str, int pos,MatchFlag flag=MatchFlag::MATCH_DEFAULT);
+        bool search(const string_t &str, int pos, int *endPos,MatchFlag flag=MatchFlag::MATCH_DEFAULT);
+    private:
+        bool matchDfs(const string_t &str, int pos,MatchFlag flag=MatchFlag::MATCH_DEFAULT);
+        bool matchBfs(const string_t &str, int pos,MatchFlag flag=MatchFlag::MATCH_DEFAULT);
+        bool searchDfs(const string_t &str, int acpos, int pos, int *endPos, bool isLazy,MatchFlag flag=MatchFlag::MATCH_DEFAULT);
+        bool searchBfs(const string_t &str, int acpos, int pos, int *endPos, bool isLazy,MatchFlag flag=MatchFlag::MATCH_DEFAULT);
     };
     class Automaton
     {
@@ -157,6 +163,7 @@ namespace tyre
         Transition *addCharRange(State * start,State * end,CharRange range);
         Transition *addTransition(State * start,State * end);
         Transition *addEmptyTransition(State * start,State * end);
+        Transition *addLazyTransition(State * start,State * end);
         Transition *addLoop(State * start, State * end);//empty
         Transition *addLoop(State *start, State *end, CharRange range);
         Transition *addBeginString(State *start, State *end);

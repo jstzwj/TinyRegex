@@ -12,6 +12,10 @@ using namespace tyre;
 int main(int argc, char *argv[])
 {
     TinyRegex r;
+    //============
+    //match test
+    //============
+
     //single character test
     r.compile(T("a"));
     assert(true==r.match(T("a")));
@@ -149,15 +153,41 @@ int main(int argc, char *argv[])
     r.compile(T("a"));
     set=r.search(T("abcadaarta"));
     assert(0==set.captureResult[0].begin);
+    assert(0==set.captureResult[0].end);
     assert(3==set.captureResult[1].begin);
+    assert(3==set.captureResult[1].end);
     assert(5==set.captureResult[2].begin);
+    assert(5==set.captureResult[2].end);
     assert(6==set.captureResult[3].begin);
+    assert(6==set.captureResult[3].end);
+    //number cahracter search test
+    r.compile(T("1"));
+    set=r.search(T("12341234123"));
+    assert(0==set.captureResult[0].begin);
+    assert(0==set.captureResult[0].end);
+    assert(4==set.captureResult[1].begin);
+    assert(4==set.captureResult[1].end);
+    assert(8==set.captureResult[2].begin);
+    assert(8==set.captureResult[2].end);
     //loop search test
     r.compile(T("a+"));
     set=r.search(T("aaaabbaaaby"));
     assert(0==set.captureResult[0].begin);
+    assert(3==set.captureResult[0].end);
     assert(6==set.captureResult[1].begin);
-
+    assert(8==set.captureResult[1].end);
+    //lazy search test
+    r.compile(T("c.+?d"));
+    set=r.search(T("cadcad"));
+    assert(0==set.captureResult[0].begin);
+    assert(2==set.captureResult[0].end);
+    assert(3==set.captureResult[1].begin);
+    assert(5==set.captureResult[1].end);
+    //inner loop search test
+    r.compile(T("c.+d"));
+    set=r.search(T("caaaadcaaaad"));
+    assert(0==set.captureResult[0].begin);
+    assert(11==set.captureResult[0].end);
 
 
 
@@ -169,7 +199,7 @@ int main(int argc, char *argv[])
 
 
     //compare with c++ regex
-    int n=10000;
+    int n=10000000;
     clock_t s,e;
 
     s=clock();

@@ -63,6 +63,7 @@ namespace tyre
         int endPos;
         for(unsigned int i=0;i<str.length();++i)
         {
+            endPos=0;
             if(graph->beginState->search(str,i,&endPos)==true)
             {
                 result.captureResult.push_back(RegexPosition(i,endPos));
