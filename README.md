@@ -9,7 +9,7 @@ This library is writed under c++ 11 compiler. It was tested in MSVC15 and GNUC4.
 ## pattern
 | pattern | describe |
 |:-------:|:--------:|
-|   `^`   | the begin of the string | 
+|   `^`   | the begin of the string | 
 |   `$`   | the end of the string | 
 |  `ab`   | matches `ab` |
 | `a|b`   | `a` or `b` |
@@ -45,7 +45,7 @@ supported escaping sequences:
 ##Match and compile option
 
 ```cpp
-    enum CompileFlag
+    enum CompileFlag
     {
         NFA_AUTOMATON=0x1,  //&~DFA_AUTOMATON
     };
@@ -59,12 +59,15 @@ supported escaping sequences:
         MATCH_BFS=0x10, //&~MATCH_DFS
     };
  ```
+
  These enum constants decide that the engine how to compile, search and match.
  
+
+
+
+##Development process
  
- ##Development process
- 
- *Capture
- *DFA
- *bfs match and search
+		*Capture
+		*DFA
+		*bfs match and search
  They are needed added in.
