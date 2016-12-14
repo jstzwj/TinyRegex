@@ -39,3 +39,27 @@ supported escaping sequences:
 |  `\.`   |   `.`  |
 |   `\+`  |   `+`  |
 |   `\$`  |   `$`  |
+
+
+#Match and compile option
+```c++
+    enum CompileFlag
+    {
+        NFA_AUTOMATON=0x1,  //&~DFA_AUTOMATON
+    };
+    enum MatchFlag
+    {
+        MATCH_DEFAULT=0x0,
+        MATCH_NOT_BOL=0x1,  //The first character in will be treated as if it is not at the beginning of a line 
+        MATCH_NOT_EOL=0x2,  //The last character in will be treated as if it is not at the end of a line 
+        MATCH_NOT_NULL=0x4, //Do not match empty sequences
+        MATCH_CONTINUOUS=0x8,  //Only match a sub-sequence that begins at first
+        MATCH_BFS=0x10, //&~MATCH_DFS
+    };
+ ```
+ 
+ #Develop process
+ *Capture
+ *DFA
+ *bfs match and search
+ They are needed added in.
