@@ -57,6 +57,7 @@ supported escaping sequences:
         MATCH_BFS=0x10, //&~MATCH_DFS
     };
  ```
+ These enum constants decide that the engine how to compile, search and match.
  
  #Develop process
  *Capture
