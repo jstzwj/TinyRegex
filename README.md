@@ -1,4 +1,5 @@
-# tinyregex
+tinyregex
+===
 A tiny regular expression library.
 
 #Environment
@@ -41,8 +42,9 @@ supported escaping sequences:
 |   `\$`  |   `$`  |
 
 
-#Match and compile option
-```c++
+##Match and compile option
+
+```cpp
     enum CompileFlag
     {
         NFA_AUTOMATON=0x1,  //&~DFA_AUTOMATON
@@ -59,7 +61,9 @@ supported escaping sequences:
  ```
  These enum constants decide that the engine how to compile, search and match.
  
- #Develop process
+ 
+ ##Development process
+ 
  *Capture
  *DFA
  *bfs match and search
