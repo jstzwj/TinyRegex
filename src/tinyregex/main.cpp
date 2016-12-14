@@ -199,7 +199,7 @@ int main(int argc, char *argv[])
 
 
     //compare with c++ regex
-    int n=10000000;
+    int n=10000;
     clock_t s,e;
 
     s=clock();

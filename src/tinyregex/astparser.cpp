@@ -136,18 +136,29 @@ namespace tyre
         int savePos=curpos;
         if(isChar(pattern,curpos,T('('))==true)
         {
-            ExpBase * exp=this->parseExp(pattern,curpos);
+            ExpBase * exp=nullptr;
+            ExpFunction * function=new ExpFunction;
+            if(isChar(pattern,curpos,T('?'))==true)
+            {
+                exp=this->parseExp(pattern,curpos);
+                function->subexp=exp;
+                function->type=FunctionType::NOCAPTURE;
+            }
+            else
+            {
+                exp=this->parseExp(pattern,curpos);
+                function->subexp=exp;
+                function->type=FunctionType::CAPTURE;
+            }
             if(exp!=nullptr)
             {
                 if(isChar(pattern,curpos,T(')'))==true)
                 {
-                    ExpFunction * function=new ExpFunction;
-                    function->subexp=exp;
-                    function->type=FunctionType::CAPTURE;
                     return function;
                 }
                 else
                 {
+                    delete function;
                     throw T("error: expected right bracket after \'")+
                         pattern.substr(savePos,this->getTokenLength(pattern,savePos))+
                         T("\'\r\nposition: ")+toString(curpos);

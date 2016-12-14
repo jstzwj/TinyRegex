@@ -21,6 +21,8 @@ namespace tyre
         LAZY,
         BEGINSTRING,
         ENDSTRING,
+        BEGINCAPTURE,
+        ENDCAPTURE,
         END
     };
     /**
@@ -168,6 +170,8 @@ namespace tyre
         Transition *addLoop(State *start, State *end, CharRange range);
         Transition *addBeginString(State *start, State *end);
         Transition *addEndString(State *start, State *end);
+        Transition *addBeginCapture(State *start, State *end);
+        Transition *addEndCapture(State *start, State *end);
         //static member functions
         static Automaton NfaToDfa(const Automaton &automaton);
     };

@@ -96,6 +96,20 @@ namespace tyre
         return newTransition;
     }
 
+    Transition *Automaton::addBeginCapture(State *start, State *end)
+    {
+        Transition * newTransition=addTransition(start,end);
+        newTransition->type=TransitionType::BEGINCAPTURE;
+        return newTransition;
+    }
+
+    Transition *Automaton::addEndCapture(State *start, State *end)
+    {
+        Transition * newTransition=addTransition(start,end);
+        newTransition->type=TransitionType::ENDCAPTURE;
+        return newTransition;
+    }
+
 
 
     Automaton Automaton::NfaToDfa(const Automaton &automaton)
@@ -107,18 +121,30 @@ namespace tyre
 
     bool State::match(const string_t &str, int pos, MatchFlag flag)
     {
+        //empty string
+        if((flag&MatchFlag::MATCH_NOT_NULL)!=0&&str.length()==0)
+        {
+            return false;
+        }
+        //match way choose
         if((flag&MatchFlag::MATCH_BFS)==0)
         {
-            matchDfs(str,pos,flag);
+            return matchDfs(str,pos,flag);
         }
         else
         {
-            matchBfs(str,pos,flag);
+            return matchBfs(str,pos,flag);
         }
     }
 
     bool State::search(const string_t &str, int pos, int *endPos, MatchFlag flag)
     {
+        //empty string
+        if((flag&MatchFlag::MATCH_NOT_NULL)!=0&&str.length()==0)
+        {
+            return false;
+        }
+        //search way choose
         if((flag&MatchFlag::MATCH_BFS)==0)
         {
             return searchDfs(str,pos-1,pos,endPos,flag);
@@ -176,7 +202,7 @@ namespace tyre
             case TransitionType::BEGINSTRING:
                 if(pos>0)
                 {
-                    if(str[pos-1]==T('\n')||str[pos-1]==T('\n'))
+                    if(str[pos-1]==T('\n')||str[pos-1]==T('\r'))
                     {
                         if(out[i]->target->matchDfs(str,pos,flag))
                         {
@@ -199,7 +225,7 @@ namespace tyre
                 if((unsigned int)pos<str.length())
                 {
                     //有点反直觉啊。。。以后改
-                    if(str[pos]==T('\n')||str[pos]==T('\n'))
+                    if(str[pos]==T('\n')||str[pos]==T('\r'))
                     {
                         if(out[i]->target->matchDfs(str,pos,flag))
                         {
@@ -216,6 +242,18 @@ namespace tyre
                             result = true;
                         }
                     }
+                }
+                break;
+            case TransitionType::BEGINCAPTURE:
+                if(out[i]->target->matchDfs(str,pos,flag))
+                {
+                    result = true;
+                }
+                break;
+            case TransitionType::ENDCAPTURE:
+                if(out[i]->target->matchDfs(str,pos,flag))
+                {
+                    result = true;
                 }
                 break;
             default:
@@ -273,7 +311,7 @@ namespace tyre
             case TransitionType::BEGINSTRING:
                 if(pos>0)
                 {
-                    if(str[pos-1]==T('\n')||str[pos-1]==T('\n'))
+                    if(str[pos-1]==T('\n')||str[pos-1]==T('\r'))
                     {
                         if(out[i]->target->searchDfs(str,acpos,pos,endPos,isLazy,flag))
                         {
@@ -296,7 +334,7 @@ namespace tyre
                 if((unsigned int)pos<str.length())
                 {
                     //有点反直觉啊。。。以后改
-                    if(str[pos]==T('\n')||str[pos]==T('\n'))
+                    if(str[pos]==T('\n')||str[pos]==T('\r'))
                     {
                         if(out[i]->target->searchDfs(str,acpos,pos,endPos,isLazy,flag))
                         {
@@ -317,6 +355,18 @@ namespace tyre
                 break;
             case TransitionType::LAZY:
                 if(out[i]->target->searchDfs(str,acpos,pos,endPos,true,flag))
+                {
+                    result = true;
+                }
+                break;
+            case TransitionType::BEGINCAPTURE:
+                if(out[i]->target->searchDfs(str,acpos,pos,endPos,isLazy,flag))
+                {
+                    result = true;
+                }
+                break;
+            case TransitionType::ENDCAPTURE:
+                if(out[i]->target->searchDfs(str,acpos,pos,endPos,isLazy,flag))
                 {
                     result = true;
                 }

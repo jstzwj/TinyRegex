@@ -156,6 +156,7 @@ namespace tyre
     enum FunctionType
     {
         CAPTURE,
+        NAMECAPTURE,
         NOCAPTURE,
         FOREWARD_POSITIVE_CAPTURE,
         FOREWARD_NEGATIVE_CAPTURE,
@@ -185,7 +186,22 @@ namespace tyre
         virtual void generate(Automaton * graph,NfaGraph result)
         {
             //以后在这里添加捕获功能
-            subexp->generate(graph,result);
+            if(type==FunctionType::CAPTURE)
+            {
+                State * firstMidState=graph->addState();
+                State * secondMidState=graph->addState();
+                graph->addBeginCapture(result.begin,firstMidState);
+                subexp->generate(graph,NfaGraph(firstMidState,secondMidState));
+                graph->addEndCapture(secondMidState,result.end);
+            }
+            else if(type==FunctionType::NOCAPTURE)
+            {
+                subexp->generate(graph,result);
+            }
+            else
+            {
+
+            }
 
         }
         virtual ~ExpFunction()
