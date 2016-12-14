@@ -42,6 +42,15 @@ supported escaping sequences:
 |   `\$`  |   `$`  |
 
 
+
+supported capture:
+
+| capture | describe |
+|:-------:|:--------:|
+|  `(...)`  |  capture to an array |
+|  `(?...)` | no capture |
+
+
 ##Match and compile option
 
 ```cpp
