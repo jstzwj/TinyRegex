@@ -16,7 +16,7 @@ namespace tyre
         error_space,         //内存不足
         error_badrepeat,     //重复字符之前没有正则表达式（* + ?）
         error_complexity,    //太复杂了，标准库君hold不住了
-        error_stack         //dfs栈溢出
+        error_stack         //栈溢出
     };
     class RegexError
     {

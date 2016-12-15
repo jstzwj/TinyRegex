@@ -3,9 +3,10 @@
 #include"base.h"
 namespace tyre
 {
-    enum CompileFlag
+    enum SyntaxFlag
     {
-        NFA_AUTOMATON=0x1,  //&~DFA_AUTOMATON
+        DEFAULT=0x0,
+        DFA_AUTOMATON=0x1,  //&~DFA_AUTOMATON
         ICASE=0x2,          //Character matching should be performed without regard to case. 
         NOSUBS=0x4,         //
         OPTIMIZE=0x8,

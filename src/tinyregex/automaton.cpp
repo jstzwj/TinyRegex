@@ -23,7 +23,7 @@ namespace tyre
 
     State *Automaton::addState()
     {
-        State * newState=new State;
+        State * newState=new State();
         newState->isEndState=false;
 
         states.push_back(newState);
@@ -159,6 +159,13 @@ namespace tyre
 
     bool State::matchBfs(const string_t &str, int pos, MatchFlag flag)
     {
+        std::vector<State *> saveStack;
+
+        while(true)
+        {
+
+        }
+
         return true;
     }
 
@@ -202,17 +209,14 @@ namespace tyre
                 }
                 break;
             case TransitionType::BEGINSTRING:
-                if(pos>0)
+                if(str[pos-1]==T('\n')||str[pos-1]==T('\r'))
                 {
-                    if(str[pos-1]==T('\n')||str[pos-1]==T('\r'))
+                    if(out[i]->target->matchDfs(str,pos,flag))
                     {
-                        if(out[i]->target->matchDfs(str,pos,flag))
-                        {
-                            result = true;
-                        }
+                        result = true;
                     }
                 }
-                else
+                if((flag&MATCH_NOT_BOL)==0)
                 {
                     if(pos==0)
                     {
@@ -224,18 +228,15 @@ namespace tyre
                 }
                 break;
             case TransitionType::ENDSTRING:
-                if((unsigned int)pos<str.length())
+                //有点反直觉啊。。。以后改
+                if(str[pos]==T('\n')||str[pos]==T('\r'))
                 {
-                    //有点反直觉啊。。。以后改
-                    if(str[pos]==T('\n')||str[pos]==T('\r'))
+                    if(out[i]->target->matchDfs(str,pos,flag))
                     {
-                        if(out[i]->target->matchDfs(str,pos,flag))
-                        {
-                            result = true;
-                        }
+                        result = true;
                     }
                 }
-                else
+                if((flag&MATCH_NOT_EOL)==0)
                 {
                     if((unsigned int)pos==str.length())
                     {
@@ -315,17 +316,14 @@ namespace tyre
                 }
                 break;
             case TransitionType::BEGINSTRING:
-                if(pos>0)
+                if(str[pos-1]==T('\n')||str[pos-1]==T('\r'))
                 {
-                    if(str[pos-1]==T('\n')||str[pos-1]==T('\r'))
+                    if(out[i]->target->searchDfs(str,beginpos,acpos,pos,smatch,isLazy,flag))
                     {
-                        if(out[i]->target->searchDfs(str,beginpos,acpos,pos,smatch,isLazy,flag))
-                        {
-                            result = true;
-                        }
+                        result = true;
                     }
                 }
-                else
+                if((flag&MATCH_NOT_BOL)==0)
                 {
                     if(pos==0)
                     {
@@ -337,18 +335,15 @@ namespace tyre
                 }
                 break;
             case TransitionType::ENDSTRING:
-                if((unsigned int)pos<str.length())
+                //有点反直觉啊。。。以后改
+                if(str[pos]==T('\n')||str[pos]==T('\r'))
                 {
-                    //有点反直觉啊。。。以后改
-                    if(str[pos]==T('\n')||str[pos]==T('\r'))
+                    if(out[i]->target->searchDfs(str,beginpos,acpos,pos,smatch,isLazy,flag))
                     {
-                        if(out[i]->target->searchDfs(str,beginpos,acpos,pos,smatch,isLazy,flag))
-                        {
-                            result = true;
-                        }
+                        result = true;
                     }
                 }
-                else
+                if((flag&MATCH_NOT_EOL)==0)
                 {
                     if((unsigned int)pos==str.length())
                     {

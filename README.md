@@ -31,15 +31,23 @@ supported escaping sequences:
 |   `\n`  | newline |
 |   `\r`  | return |
 |   `\s`  |  space |
+|   `\S`  |  not space|
+|   `\d`  |  numbers   |
+|   `\D`  |  not numbers |
 |   `\\`  |  `\`   |
 |   `\(`  |  `(`   |
 |   `\)`  |  `)`   |
+|   `\{`  |  `{`   |
+|   `\}`  |  `}`   |
 | `\[`    |   `[`  |
 | `\]`    |   `]`  |
+|   `\|`  |  `|`   |
+|   `\?`  |  `?`   |
 |  `\-`   |   `-`  |
 |  `\.`   |   `.`  |
 |   `\+`  |   `+`  |
 |   `\$`  |   `$`  |
+|   `\^`  |   `^`  |
 
 
 
@@ -54,16 +62,39 @@ supported capture:
 ##Match and compile option
 
 ```cpp
-    enum CompileFlag
+    enum SyntaxFlag
     {
-        NFA_AUTOMATON=0x1,  //&~DFA_AUTOMATON
+        DEFAULT=0x0,        
+        //supportted
+
+        DFA_AUTOMATON=0x1,  //&~DFA_AUTOMATON
+        ICASE=0x2,          //Character matching should be performed without regard to case. 
+        NOSUBS=0x4,         //All marked sub-expressions (expr) are treated as non-marking sub-expressions 
+        //supportted
+
+        OPTIMIZE=0x8,
+        COLLATE=0x10,
+        MULTILINE=0x20,
+        BASIC=0x40,
+        EXTENDS=0x80,
+        AWK=0x100,
+        GREP=0x200,
+        EGREP=0x400
     };
     enum MatchFlag
     {
         MATCH_DEFAULT=0x0,
-        MATCH_NOT_BOL=0x1,  //The first character in will be treated as if it is not at the beginning of a line 
+        //supportted
+
+        MATCH_NOT_BOL=0x1,  //The first character in will be treated as if it is not at the beginning of a line
+        //supportted
+
         MATCH_NOT_EOL=0x2,  //The last character in will be treated as if it is not at the end of a line 
+        //supportted
+
         MATCH_NOT_NULL=0x4, //Do not match empty sequences
+        //supportted
+
         MATCH_CONTINUOUS=0x8,  //Only match a sub-sequence that begins at first
         MATCH_BFS=0x10, //&~MATCH_DFS
     };

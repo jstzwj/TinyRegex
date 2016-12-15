@@ -35,6 +35,5 @@ namespace tyre
     #define MAX_CHAR 256
 #endif // TINYREGEX_UNICODE
     typedef unsigned char byte;
-    typedef std::unordered_map<int,std::unordered_map<int,int> > StateTable;
 }
 #endif // BASE_H

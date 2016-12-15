@@ -13,10 +13,10 @@ namespace tyre
     {
     public:
         TinyRegex();
-        TinyRegex(const char_t * pattern);
-        TinyRegex(const string_t& pattern);
+        TinyRegex(const char_t * pattern,SyntaxFlag flag=SyntaxFlag::DEFAULT);
+        TinyRegex(const string_t& pattern,SyntaxFlag flag=SyntaxFlag::DEFAULT);
         ~TinyRegex();
-        void compile(const string_t& pattern);
+        void compile(const string_t& pattern, SyntaxFlag flag=SyntaxFlag::DEFAULT);
         bool match(const string_t & str);
         RegexResult search(const string_t & str);
     private:

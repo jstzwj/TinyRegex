@@ -197,7 +197,14 @@ int main(int argc, char *argv[])
     assert(1==set.subMatch[0].captureResult[0].begin);
     assert(3==set.subMatch[0].captureResult[0].end);
 
+    //=========================
+    //compile option test
+    //=========================
 
+    //nosubs
+    r.compile(T("(abc)"),SyntaxFlag::NOSUBS);
+    set=r.search(T("abcdabc"));
+    assert(0==set.subMatch[0].mark_count());
 
 
 

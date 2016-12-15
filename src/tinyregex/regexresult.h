@@ -28,6 +28,8 @@ namespace tyre
         int begin;
         int end;
         std::vector<RegexPosition> captureResult;
+
+        int mark_count(){return captureResult.size();}
     };
 
     class RegexResult

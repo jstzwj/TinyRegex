@@ -85,6 +85,8 @@ namespace tyre
         LoopRange(){}
         LoopRange(int begin,int end,bool inverse=false)
             :loopBegin(begin),loopEnd(end),isInverse(inverse) {}
+        LoopRange(const LoopRange &)=delete;
+
         int loopBegin;
         int loopEnd;
         bool isInverse;
@@ -122,12 +124,18 @@ namespace tyre
             :source(src),target(tar){}
         Transition(State * src,State * tar,const CharRange &ran)
             :source(src),target(tar),range(ran){}
+        Transition(const Transition &)=delete;
+
         State * source;
         State * target;
         CharRange range;
         int passCounter;
         TransitionType type;
     };
+    /**
+     * @brief The StateFrame class
+     * @attention The class have not been used.
+     */
     class StateFrame
     {
     public:
@@ -143,7 +151,11 @@ namespace tyre
         std::vector<Transition *> out;
         std::vector<Transition *> in;
         bool isEndState;
-        int edgeLock;
+        //int edgeLock;
+
+        State()
+            :out(),in(),isEndState(false){}
+        State(const State &)=delete;
 
         bool match(const string_t &str, int pos,MatchFlag flag=MatchFlag::MATCH_DEFAULT);
         bool search(const string_t &str, int pos, RegexSubMatch &smatch,MatchFlag flag=MatchFlag::MATCH_DEFAULT);
@@ -158,6 +170,7 @@ namespace tyre
     public:
         Automaton();
         ~Automaton();
+        //Automaton(const Automaton &);
         std::vector<State *> states;
         std::vector<Transition *> transitions;
         State * beginState;

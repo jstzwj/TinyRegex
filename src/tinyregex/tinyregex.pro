@@ -9,7 +9,8 @@ SOURCES += main.cpp \
     message.cpp \
     automaton.cpp \
     nfagraph.cpp \
-    regexresult.cpp
+    regexresult.cpp \
+    stringutilities.cpp
 
 
 HEADERS += \
@@ -22,7 +23,8 @@ HEADERS += \
     nfagraph.h \
     regexresult.h \
     attribute.h \
-    regexerror.h
+    regexerror.h \
+    stringutilities.h
 
 
 DISTFILES += \

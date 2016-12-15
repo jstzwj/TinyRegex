@@ -25,8 +25,11 @@ namespace tyre
      */
     class AstParser
     {
+    private:
+        SyntaxFlag flag;
     public:
         AstParser();
+        AstParser(SyntaxFlag _flag);
         //parser
         ExpBase * parse(const string_t & pattern);
         ExpBase * parseExp(const string_t & pattern,int &curpos);

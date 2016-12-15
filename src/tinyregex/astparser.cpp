@@ -3,9 +3,9 @@ namespace tyre
 {
 
     AstParser::AstParser()
-    {
-
-    }
+        :flag(SyntaxFlag::DEFAULT){}
+    AstParser::AstParser(SyntaxFlag _flag)
+        :flag(_flag){}
 
     ExpBase *AstParser::parse(const string_t &pattern)
     {
@@ -138,7 +138,8 @@ namespace tyre
         {
             ExpBase * exp=nullptr;
             ExpFunction * function=new ExpFunction;
-            if(isChar(pattern,curpos,T('?'))==true)
+            if(isChar(pattern,curpos,T('?'))==true||
+                    ((flag&SyntaxFlag::NOSUBS)!=0))//if enable nosubs option
             {
                 exp=this->parseExp(pattern,curpos);
                 function->subexp=exp;

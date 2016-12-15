@@ -7,15 +7,15 @@ namespace tyre
 
     }
 
-    TinyRegex::TinyRegex(const string_t &pattern)
+    TinyRegex::TinyRegex(const string_t &pattern, SyntaxFlag flag)
         :root(nullptr),graph(nullptr)
     {
-        compile(pattern);
+        compile(pattern,flag);
     }
-    TinyRegex::TinyRegex(const char_t * pattern)
+    TinyRegex::TinyRegex(const char_t * pattern, SyntaxFlag flag)
         :root(nullptr),graph(nullptr)
     {
-        compile(pattern);
+        compile(pattern,flag);
     }
 
     TinyRegex::~TinyRegex()
@@ -30,26 +30,31 @@ namespace tyre
         }
     }
 
-    void TinyRegex::compile(const string_t &pattern)
+    void TinyRegex::compile(const string_t &pattern, SyntaxFlag flag)
     {
-        AstParser parser;
-        if(root!=nullptr)
+        try
         {
-            delete root;
+            AstParser parser(flag);
+            if(root!=nullptr)
+            {
+                delete root;
+            }
+            root=parser.parse(pattern);
+            if(graph!=nullptr)
+            {
+                delete graph;
+            }
+            graph=new Automaton;
+
+            nfa.begin=graph->addState();
+            nfa.end=graph->addState();
+            root->generate(graph,nfa);
+            nfa.applyToAutomaton(graph);
         }
-        root=parser.parse(pattern);
-        if(graph!=nullptr)
+        catch(const std::bad_alloc& ba)
         {
-            delete graph;
+            throw RegexError(ErrorCode::error_space);
         }
-        graph=new Automaton;
-
-        nfa.begin=graph->addState();
-        nfa.end=graph->addState();
-        root->generate(graph,nfa);
-        nfa.applyToAutomaton(graph);
-
-        return;
     }
 
     bool TinyRegex::match(const tyre::string_t &str)
