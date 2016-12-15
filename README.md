@@ -14,13 +14,17 @@ This library is writed under c++ 11 compiler. It was tested in MSVC15 and GNUC4.
 |  `ab`   | matches `ab` |
 | `a|b`   | `a` or `b` |
 |  `a{x,y}`   | matches `a` which repeats from `x` to `y`|
-|  `a*`   | equal to `a{0,}` |
-|  `a?`   | equal to `a{0,1}` |
-|  `a+`   | equal to `a{1,}` |
+|  `a*`   | equivalent to `a{0,}` |
+|  `a?`   | equivalent to `a{0,1}` |
+|  `a+`   | equivalent to `a{1,}` |
 |  `(...)`| capture the content inside|
 |  `[a-b]`| any a character between `a` and `b` |
+|  `[^a-b]`| characters that are not within the range |
 |  `.`    | matches any a character |
-|   `a+?` | matches the repeated `a` as less as possible|
+|   `a+?` | matches the repeated `a` {1,} as less as possible|
+|   `a??` | matches the repeated `a` {0,1} as less as possible|
+|   `a*?` | matches the repeated `a` {0,} as less as possible|
+|   `a{x,y}?` | matches the repeated `a` {x,y} as less as possible|
 |  `\`    | escapes special characters|
 
 supported escaping sequences:

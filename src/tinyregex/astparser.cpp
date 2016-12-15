@@ -249,17 +249,14 @@ namespace tyre
             {
                 throw RegexError(ErrorCode::error_brace);
             }
-            else
-            {
-                if(isChar(pattern,curpos,T('?')))
-                {
-                    loop->lazy=true;
-                }
-                else
-                {
-                    loop->lazy=false;
-                }
-            }
+        }
+        if(isChar(pattern,curpos,T('?')))
+        {
+            loop->lazy=true;
+        }
+        else
+        {
+            loop->lazy=false;
         }
         return loop;
     }
