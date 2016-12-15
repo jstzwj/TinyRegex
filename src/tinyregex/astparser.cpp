@@ -159,9 +159,7 @@ namespace tyre
                 else
                 {
                     delete function;
-                    throw T("error: expected right bracket after \'")+
-                        pattern.substr(savePos,this->getTokenLength(pattern,savePos))+
-                        T("\'\r\nposition: ")+toString(curpos);
+                    throw RegexError(ErrorCode::error_paren);
                 }
 
             }
@@ -248,8 +246,7 @@ namespace tyre
             }
             if(!isChar(pattern,curpos,T('}')))
             {
-                throw T("error: expected right bracket near \'")+
-                        toString(pattern[curpos])+T("\'\r\nposition: ")+toString(curpos);
+                throw RegexError(ErrorCode::error_brace);
             }
             else
             {
@@ -329,7 +326,7 @@ namespace tyre
                 if((unsigned int)(curpos)>=pattern.length())
                 {
                     curpos=savePos;
-                    throw "Expected the right bracket";
+                    throw RegexError(ErrorCode::error_brack);
                 }
             }
             return range;

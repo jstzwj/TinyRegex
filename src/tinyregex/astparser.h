@@ -3,7 +3,7 @@
 #include<vector>
 #include"base.h"
 #include"astnode.h"
-#include"message.h"
+#include"regexerror.h"
 /**
  *  The BNF of regex:
  *  Char : #A character#
@@ -27,8 +27,6 @@ namespace tyre
     {
     public:
         AstParser();
-        //error message
-        std::vector<Message> errorMsg;
         //parser
         ExpBase * parse(const string_t & pattern);
         ExpBase * parseExp(const string_t & pattern,int &curpos);

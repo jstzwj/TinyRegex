@@ -60,14 +60,13 @@ namespace tyre
     RegexResult TinyRegex::search(const string_t &str)
     {
         RegexResult result;
-        int endPos;
         for(unsigned int i=0;i<str.length();++i)
         {
-            endPos=0;
-            if(graph->beginState->search(str,i,&endPos)==true)
+            RegexSubMatch smatch;
+            if(graph->beginState->search(str,i,smatch)==true)
             {
-                result.captureResult.push_back(RegexPosition(i,endPos));
-                i=endPos;
+                result.subMatch.push_back(smatch);
+                i=smatch.end;
             }
         }
         return result;

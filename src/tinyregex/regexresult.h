@@ -8,23 +8,33 @@ namespace tyre
     class RegexPosition
     {
     public:
-        RegexPosition()
-            :begin(0),end(0){}
-        RegexPosition(int _begin,int _end)
-            :begin(_begin),end(_end){}
+        RegexPosition():begin(0),end(0){}
+        RegexPosition(int _begin,int _end):begin(_begin),end(_end){}
         RegexPosition(int _begin,int _end,const string_t name)
             :begin(_begin),end(_end),captureName(name){}
-        int line;//暂时不用
         int begin;
         int end;
         string_t captureName;
+    };
+
+    class RegexSubMatch
+    {
+    public:
+        RegexSubMatch()
+            :begin(0),end(0){}
+        RegexSubMatch(int _begin,int _end)
+            :begin(_begin),end(_end){}
+
+        int begin;
+        int end;
+        std::vector<RegexPosition> captureResult;
     };
 
     class RegexResult
     {
     public:
         RegexResult(){}
-        std::vector<RegexPosition> captureResult;
+        std::vector<RegexSubMatch> subMatch;
     };
 }
 

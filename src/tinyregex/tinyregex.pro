@@ -21,7 +21,8 @@ HEADERS += \
     automaton.h \
     nfagraph.h \
     regexresult.h \
-    attribute.h
+    attribute.h \
+    regexerror.h
 
 
 DISTFILES += \
