@@ -17,7 +17,7 @@ This library is writed under c++ 11 compiler. It was tested in MSVC15 and GNUC4.
 |  `a*`   | equivalent to `a{0,}` |
 |  `a?`   | equivalent to `a{0,1}` |
 |  `a+`   | equivalent to `a{1,}` |
-|  `(...)`| capture the content inside|
+|  `(...)`| indicate the start and end of a group|
 |  `[a-b]`| any a character between `a` and `b` |
 |  `[^a-b]`| characters that are not within the range |
 |  `.`    | matches any a character |
@@ -114,4 +114,7 @@ supported capture:
 		*Capture
 		*DFA
 		*bfs match and search
+		*divide beginstring and beginline(end)
+		*Named capture
+		*string replace
  They are needed added in.
