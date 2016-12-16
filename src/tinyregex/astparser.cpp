@@ -298,6 +298,11 @@ namespace tyre
         if(this->isChar(pattern,curpos,T('[')))
         {
             ExpCharRange * range=new ExpCharRange;
+            //isIcase
+            if((this->flag&SyntaxFlag::ICASE)!=0)
+            {
+                range->icase=true;
+            }
             //isInverse
             if(this->isChar(pattern,curpos,T('^')))
             {
@@ -337,6 +342,11 @@ namespace tyre
             if(this->isChar(pattern,curpos,T('\\')))
             {
                 ExpCharRange * range=new ExpCharRange;
+                //isIcase
+                if((this->flag&SyntaxFlag::ICASE)!=0)
+                {
+                    range->icase=true;
+                }
                 switch(pattern[curpos])
                 {
                 //escape sequence
@@ -445,6 +455,11 @@ namespace tyre
                 }
                 //other char
                 ExpCharRange * range=new ExpCharRange;
+                //isIcase
+                if((this->flag&SyntaxFlag::ICASE)!=0)
+                {
+                    range->icase=true;
+                }
                 range->rangles.push_back(CharRange(pattern[curpos],pattern[curpos],false));
                 ++curpos;
                 return range;

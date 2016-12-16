@@ -7,6 +7,7 @@
 #include"regexresult.h"
 #include"attribute.h"
 #include"regexerror.h"
+#include"stringutilities.h"
 
 namespace tyre
 {
@@ -56,8 +57,7 @@ namespace tyre
         char_t charBegin;
         char_t charEnd;
         bool isInverse;
-
-        bool isSubSet(char_t element)
+        bool isElement(char_t element)
         {
             bool result(false);
             if(element>=charBegin&&element<=charEnd)
@@ -73,6 +73,117 @@ namespace tyre
                 result=!result;
             }
             return result;
+        }
+        //we assume that charEnd is bigger than charBegin
+        std::vector<CharRange> interSection(char_t begin,char_t end)
+        {
+            std::vector<CharRange> result;
+            if(isInverse)
+            {
+                //empty intersection
+                if(begin>charBegin&&end<charEnd)
+                {
+                    return result;
+                }
+                if(begin<=charBegin)
+                {
+                    if(end>=charEnd)
+                    {
+                        result.push_back(CharRange(begin,charBegin));
+                        result.push_back(CharRange(charEnd,end));
+                    }
+                    else
+                    {
+                        result.push_back(CharRange(begin,charBegin));
+                    }
+                }
+                else
+                {
+                    if(end>=charEnd)
+                    {
+                        result.push_back(CharRange(charEnd,end));
+                    }
+                }
+            }
+            else
+            {
+                //empty intersection
+                if(end<charBegin||begin>charEnd)
+                {
+                    return result;
+                }
+                char_t b,e;
+                if(begin<charBegin)
+                {
+                    b=charBegin;
+                }
+                else
+                {
+                    b=begin;
+                }
+                if(end>charEnd)
+                {
+                    e=charEnd;
+                }
+                else
+                {
+                    e=end;
+                }
+                result.push_back(CharRange(b,e));
+            }
+            return result;
+        }
+
+        bool isSubSet(char_t begin,char_t end)
+        {
+            if(isInverse)
+            {
+                if(begin>charEnd||end<charBegin)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                if(begin>=charBegin&&end<=charEnd)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+        }
+
+        bool isSubSet(char_t element,bool icase=false)
+        {
+            if(icase==true&&element>=T('a')&&element<=T('z'))
+            {
+                return isElement(StringUtilities::toUpper(element))||isElement(element);
+            }
+            else if(icase==true&&element>=T('A')&&element<=T('Z'))
+            {
+                return isElement(StringUtilities::toLower(element))||isElement(element);
+            }
+            else
+            {
+                return isElement(element);
+            }
+        }
+        void toUpper()
+        {
+            charBegin-=T('a')-T('A');
+            charEnd-=T('a')-T('A');
+        }
+        void toLower()
+        {
+            charBegin+=T('a')-T('A');
+            charEnd+=T('a')-T('A');
         }
     };
     /**

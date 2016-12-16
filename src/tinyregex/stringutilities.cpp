@@ -28,5 +28,15 @@ namespace tyre
             return false;
         }
     }
+
+    char_t StringUtilities::toUpper(char_t c)
+    {
+        return c-(T('a')-T('A'));
+    }
+
+    char_t StringUtilities::toLower(char_t c)
+    {
+        return c+T('a')-T('A');
+    }
 }
 

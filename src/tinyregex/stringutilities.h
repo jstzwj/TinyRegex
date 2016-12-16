@@ -11,7 +11,8 @@ namespace tyre
         StringUtilities();
         //static member function
         static bool isStr(const string_t & pattern,int curpos,const string_t & str);
-
+        static char_t toUpper(char_t c);
+        static char_t toLower(char_t c);
     };
 }
 

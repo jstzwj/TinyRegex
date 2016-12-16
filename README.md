@@ -69,17 +69,19 @@ supported capture:
     enum SyntaxFlag
     {
         DEFAULT=0x0,        
-        //supportted
+        //supported
 
         DFA_AUTOMATON=0x1,  //&~DFA_AUTOMATON
         ICASE=0x2,          //Character matching should be performed without regard to case. 
+        //supported
+
         NOSUBS=0x4,         //All marked sub-expressions (expr) are treated as non-marking sub-expressions 
-        //supportted
+        //supported
 
         OPTIMIZE=0x8,
         COLLATE=0x10,
-        MULTILINE=0x20,
-        //supportted
+        MULTILINE=0x20,	//Specifies that ^ shall match the beginning of a line and $ shall match the end of a line.
+        //supported
 
         BASIC=0x40,
         EXTENDS=0x80,
@@ -90,16 +92,16 @@ supported capture:
     enum MatchFlag
     {
         MATCH_DEFAULT=0x0,
-        //supportted
+        //supported
 
         MATCH_NOT_BOL=0x1,  //The first character in will be treated as if it is not at the beginning of a line
-        //supportted
+        //supported
 
         MATCH_NOT_EOL=0x2,  //The last character in will be treated as if it is not at the end of a line 
-        //supportted
+        //supported
 
         MATCH_NOT_NULL=0x4, //Do not match empty sequences
-        //supportted
+        //supported
 
         MATCH_CONTINUOUS=0x8,  //Only match a sub-sequence that begins at first
         MATCH_BFS=0x10, //&~MATCH_DFS
@@ -116,7 +118,8 @@ supported capture:
 		*Capture
 		*DFA
 		*bfs match and search
-		*divide beginstring and beginline(end)
 		*Named capture
 		*string replace
+		*optimize
+		*posix regexp
  They are needed added in.

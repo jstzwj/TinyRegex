@@ -208,7 +208,7 @@ namespace tyre
             {
             case TransitionType::CHARS:
                 if(out[i]->range.isSubSet(str[pos])||
-                        out[i]->type==TransitionType::EMPTY)
+                        out[i]->type==TransitionType::EMPTY)    //flag :may be a bug
                 {
                     if(out[i]->target->matchDfs(str,pos+1,flag))
                     {

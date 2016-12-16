@@ -210,6 +210,12 @@ int main(int argc, char *argv[])
     r.compile(T("^123$\\n23"),SyntaxFlag::MULTILINE);
     assert(true==r.match(T("123\n23")));
 
+    //icase
+    r.compile(T("abc1Qty"),SyntaxFlag::ICASE);
+    assert(true==r.match(T("ABC1qTy")));
+    assert(false==r.match(T("ABC2qty")));
+
+
 
 
     //compare with c++ regex
