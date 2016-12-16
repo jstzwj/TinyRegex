@@ -123,3 +123,32 @@ supported capture:
 		*optimize
 		*posix regexp
  They are needed added in.
+
+
+##How to use it
+
+match -- --
+```cpp
+	#include"tinyregex.h"
+	using namespace tyre;
+	int main()
+	{
+		TinyRegex r(T("hello world"));//T("") indicates the char set of tinyregex
+		r.match(T("hello world"));//return true
+		r.match(T("hello world"));//return false
+		return 0;
+	}
+
+```
+
+
+
+About char set:
+use utf-16: add "#define TINYREGEX_UNICODE" before "base.h";
+use ascii: remove "#define TINYREGEX_UNICODE" in "base.h";
+
+
+
+
+
+
