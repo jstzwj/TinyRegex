@@ -96,6 +96,20 @@ namespace tyre
         return newTransition;
     }
 
+    Transition *Automaton::addBeginLine(State *start, State *end)
+    {
+        Transition * newTransition=addTransition(start,end);
+        newTransition->type=TransitionType::BEGINLINE;
+        return newTransition;
+    }
+
+    Transition *Automaton::addEndLine(State *start, State *end)
+    {
+        Transition * newTransition=addTransition(start,end);
+        newTransition->type=TransitionType::ENDLINE;
+        return newTransition;
+    }
+
     Transition *Automaton::addBeginCapture(State *start, State *end)
     {
         Transition * newTransition=addTransition(start,end);
@@ -208,7 +222,7 @@ namespace tyre
                     result = true;
                 }
                 break;
-            case TransitionType::BEGINSTRING:
+            case TransitionType::BEGINLINE:
                 if(str[pos-1]==T('\n')||str[pos-1]==T('\r'))
                 {
                     if(out[i]->target->matchDfs(str,pos,flag))
@@ -216,6 +230,8 @@ namespace tyre
                         result = true;
                     }
                 }
+                //attention no break
+            case TransitionType::BEGINSTRING:
                 if((flag&MATCH_NOT_BOL)==0)
                 {
                     if(pos==0)
@@ -227,7 +243,7 @@ namespace tyre
                     }
                 }
                 break;
-            case TransitionType::ENDSTRING:
+            case TransitionType::ENDLINE:
                 //有点反直觉啊。。。以后改
                 if(str[pos]==T('\n')||str[pos]==T('\r'))
                 {
@@ -236,6 +252,9 @@ namespace tyre
                         result = true;
                     }
                 }
+                //attention no break
+            case TransitionType::ENDSTRING:
+
                 if((flag&MATCH_NOT_EOL)==0)
                 {
                     if((unsigned int)pos==str.length())
@@ -315,14 +334,16 @@ namespace tyre
                     result = true;
                 }
                 break;
-            case TransitionType::BEGINSTRING:
+            case TransitionType::BEGINLINE:
                 if(str[pos-1]==T('\n')||str[pos-1]==T('\r'))
                 {
-                    if(out[i]->target->searchDfs(str,beginpos,acpos,pos,smatch,isLazy,flag))
+                    if(out[i]->target->matchDfs(str,pos,flag))
                     {
                         result = true;
                     }
                 }
+                //attention no break
+            case TransitionType::BEGINSTRING:
                 if((flag&MATCH_NOT_BOL)==0)
                 {
                     if(pos==0)
@@ -334,15 +355,17 @@ namespace tyre
                     }
                 }
                 break;
-            case TransitionType::ENDSTRING:
+            case TransitionType::ENDLINE:
                 //有点反直觉啊。。。以后改
                 if(str[pos]==T('\n')||str[pos]==T('\r'))
                 {
-                    if(out[i]->target->searchDfs(str,beginpos,acpos,pos,smatch,isLazy,flag))
+                    if(out[i]->target->matchDfs(str,pos,flag))
                     {
                         result = true;
                     }
                 }
+                //attention no break
+            case TransitionType::ENDSTRING:
                 if((flag&MATCH_NOT_EOL)==0)
                 {
                     if((unsigned int)pos==str.length())

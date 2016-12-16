@@ -276,6 +276,28 @@ namespace tyre
         }
         virtual ~ExpEndString(){}
     };
+    class ExpBeginLine:public ExpBase
+    {
+    public:
+        ExpBeginLine(){}
+        virtual void release(){delete this;}
+        virtual void generate(Automaton * graph,NfaGraph result)
+        {
+            graph->addBeginLine(result.begin,result.end);
+        }
+        virtual ~ExpBeginLine(){}
+    };
+    class ExpEndLine:public ExpBase
+    {
+    public:
+        ExpEndLine(){}
+        virtual void release(){delete this;}
+        virtual void generate(Automaton * graph,NfaGraph result)
+        {
+            graph->addEndLine(result.begin,result.end);
+        }
+        virtual ~ExpEndLine(){}
+    };
     class ExpLoop:public ExpBase
     {
     public:

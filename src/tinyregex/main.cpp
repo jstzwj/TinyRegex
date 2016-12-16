@@ -135,7 +135,7 @@ int main(int argc, char *argv[])
     assert(false==r.match(T("123")));
     assert(false==r.match(T("12")));
     assert(false==r.match(T("23")));
-    assert(true==r.match(T("123\n23")));
+    assert(false==r.match(T("123\n23")));
 
 
     //complex march test
@@ -206,6 +206,9 @@ int main(int argc, char *argv[])
     set=r.search(T("abcdabc"));
     assert(0==set.subMatch[0].mark_count());
 
+    //multiline
+    r.compile(T("^123$\\n23"),SyntaxFlag::MULTILINE);
+    assert(true==r.match(T("123\n23")));
 
 
 

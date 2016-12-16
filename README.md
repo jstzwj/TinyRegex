@@ -79,6 +79,8 @@ supported capture:
         OPTIMIZE=0x8,
         COLLATE=0x10,
         MULTILINE=0x20,
+        //supportted
+
         BASIC=0x40,
         EXTENDS=0x80,
         AWK=0x100,

@@ -250,13 +250,16 @@ namespace tyre
                 throw RegexError(ErrorCode::error_brace);
             }
         }
-        if(isChar(pattern,curpos,T('?')))
+        if(loop!=nullptr)
         {
-            loop->lazy=true;
-        }
-        else
-        {
-            loop->lazy=false;
+            if(isChar(pattern,curpos,T('?')))
+            {
+                loop->lazy=true;
+            }
+            else
+            {
+                loop->lazy=false;
+            }
         }
         return loop;
     }
@@ -398,13 +401,29 @@ namespace tyre
             }
             else if(this->isChar(pattern,curpos,T('^')))
             {
-                ExpBeginString * range=new ExpBeginString;
-                return range;
+                if((this->flag&SyntaxFlag::MULTILINE)==0)
+                {
+                    ExpBeginString * range=new ExpBeginString;
+                    return range;
+                }
+                else
+                {
+                    ExpBeginLine * range=new ExpBeginLine;
+                    return range;
+                }
             }
             else if(this->isChar(pattern,curpos,T('$')))
             {
-                ExpEndString * range=new ExpEndString;
-                return range;
+                if((this->flag&SyntaxFlag::MULTILINE)==0)
+                {
+                    ExpEndString * range=new ExpEndString;
+                    return range;
+                }
+                else
+                {
+                    ExpEndLine * range=new ExpEndLine;
+                    return range;
+                }
             }
             else
             {
