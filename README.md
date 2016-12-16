@@ -3,7 +3,7 @@ tinyregex
 A tiny regular expression library.
 
 #Environment
-This library is writed under c++ 11 compiler. It was tested in MSVC15 and GNUC4.9.2 compiler.
+This library is writen in c++ 11. It was tested in MSVC15 and GNUC4.9.2 compiler.
 
 #Syntax supported
 ## pattern
@@ -122,7 +122,8 @@ supported capture:
 		*string replace
 		*optimize
 		*posix regexp
- They are needed added in.
+
+ These features are needed added in.
 
 
 ##How to use it
@@ -146,9 +147,5 @@ match -- --
 About char set:
 use utf-16: add "#define TINYREGEX_UNICODE" before "base.h";
 use ascii: remove "#define TINYREGEX_UNICODE" in "base.h";
-
-
-
-
 
 
