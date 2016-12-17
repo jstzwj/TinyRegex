@@ -27,8 +27,10 @@ namespace tyre
         ENDLINE,
         BEGINCAPTURE,
         ENDCAPTURE,
-        CaptureReference,
-        NameCaptureReference,
+        BEGIN_NAMED_CAPTURE,
+        END_NAMED_CAPTURE,
+        CAPTURE_REFERENCE,
+        NAME_CAPTURE_REFERENCE,
         END
     };
     /**
@@ -308,6 +310,8 @@ namespace tyre
         Transition *addEndLine(State *start, State *end);
         Transition *addBeginCapture(State *start, State *end);
         Transition *addEndCapture(State *start, State *end);
+        Transition *addBeginNamedCapture(State *start, State *end, const string_t &name);
+        Transition *addEndNamedCapture(State *start, State *end, const string_t &name);
         Transition *addCaptureReference(State *start, State *end,int pos);//reference
         Transition *addCaptureReference(State *start, State *end, const string_t &name);//named reference
         //static member functions

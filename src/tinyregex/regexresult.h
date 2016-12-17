@@ -2,6 +2,7 @@
 #define REGEXRESULT_H
 
 #include<vector>
+#include<map>
 #include"base.h"
 namespace tyre
 {
@@ -28,6 +29,7 @@ namespace tyre
         int begin;
         int end;
         std::vector<RegexPosition> captureResult;
+        std::map<string_t,RegexPosition> namedCaptureResult;
 
         int mark_count(){return captureResult.size();}
     };

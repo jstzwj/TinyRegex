@@ -12,6 +12,7 @@ namespace tyre
         error_paren,     //小括号不匹配
         error_brace,     //大括号不匹配
         error_badbrace,     //大括号中的范围无效
+        error_name,         //命名无效
         error_range,         //无效的（不合法）字符范围
         error_space,         //内存不足
         error_badrepeat,     //重复字符之前没有正则表达式（* + ?）

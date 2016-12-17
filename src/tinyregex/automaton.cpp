@@ -124,10 +124,26 @@ namespace tyre
         return newTransition;
     }
 
+    Transition *Automaton::addBeginNamedCapture(State *start, State *end, const string_t &name)
+    {
+        Transition * newTransition=addTransition(start,end);
+        newTransition->type=TransitionType::BEGIN_NAMED_CAPTURE;
+        newTransition->captureName=new string_t(name);
+        return newTransition;
+    }
+
+    Transition *Automaton::addEndNamedCapture(State *start, State *end, const string_t &name)
+    {
+        Transition * newTransition=addTransition(start,end);
+        newTransition->type=TransitionType::END_NAMED_CAPTURE;
+        newTransition->captureName=new string_t(name);
+        return newTransition;
+    }
+
     Transition *Automaton::addCaptureReference(State *start, State *end, int pos)
     {
         Transition * newTransition=addTransition(start,end);
-        newTransition->type=TransitionType::CaptureReference;
+        newTransition->type=TransitionType::CAPTURE_REFERENCE;
         newTransition->captureNum=pos;
         return newTransition;
     }
@@ -135,12 +151,10 @@ namespace tyre
     Transition *Automaton::addCaptureReference(State *start, State *end, const string_t &name)
     {
         Transition * newTransition=addTransition(start,end);
-        newTransition->type=TransitionType::NameCaptureReference;
+        newTransition->type=TransitionType::NAME_CAPTURE_REFERENCE;
         newTransition->captureName=new string_t(name);
         return newTransition;
     }
-
-
 
     Automaton Automaton::NfaToDfa(const Automaton &automaton)
     {
@@ -294,6 +308,33 @@ namespace tyre
                     result = true;
                 }
                 break;
+            case TransitionType::BEGIN_NAMED_CAPTURE:
+                if(out[i]->target->matchDfs(str,pos,flag))
+                {
+                    result = true;
+                }
+                break;
+            case TransitionType::END_NAMED_CAPTURE:
+                if(out[i]->target->matchDfs(str,pos,flag))
+                {
+                    result = true;
+                }
+                break;
+            case TransitionType::CAPTURE_REFERENCE:
+                //if(StringUtilities::isStr(str,pos))
+                {
+                    if(out[i]->target->matchDfs(str,pos,flag))
+                    {
+                        result = true;
+                    }
+                }
+                break;
+            case TransitionType::NAME_CAPTURE_REFERENCE:
+                if(out[i]->target->matchDfs(str,pos,flag))
+                {
+                    result = true;
+                }
+                break;
             default:
                 break;
             }
@@ -421,6 +462,59 @@ namespace tyre
                     }
                     result = true;
                 }
+                break;
+            case TransitionType::BEGIN_NAMED_CAPTURE:
+                smatch.namedCaptureResult.insert(std::make_pair(*(out[i]->captureName),RegexPosition(acpos+1,acpos+1)));
+                if(out[i]->target->searchDfs(str,beginpos,acpos,pos,smatch,isLazy,flag))
+                {
+                    result = true;
+                }
+                else
+                {
+                    smatch.namedCaptureResult.erase(*(out[i]->captureName));
+                }
+                break;
+            case TransitionType::END_NAMED_CAPTURE:
+                if(out[i]->target->searchDfs(str,beginpos,acpos,pos,smatch,isLazy,flag))
+                {
+                    if(smatch.namedCaptureResult.find(*(out[i]->captureName))!=smatch.namedCaptureResult.end())
+                    {
+                        smatch.namedCaptureResult[*(out[i]->captureName)].end=acpos;
+                    }
+                    result = true;
+                }
+                break;
+            case TransitionType::CAPTURE_REFERENCE:
+            {
+                int num=out[i]->captureNum;
+                if(StringUtilities::isStr(str,
+                                          pos,
+                                          str,
+                                          smatch.captureResult[num].begin,
+                                          smatch.captureResult[num].end))
+                {
+                    if(out[i]->target->searchDfs(str,beginpos,acpos,pos,smatch,isLazy,flag))
+                    {
+                        result = true;
+                    }
+                }
+            }
+                break;
+            case TransitionType::NAME_CAPTURE_REFERENCE:
+            {
+                string_t & name=*(out[i]->captureName);
+                if(StringUtilities::isStr(str,
+                                          pos,
+                                          str,
+                                          smatch.namedCaptureResult[name].begin,
+                                          smatch.namedCaptureResult[name].end))
+                {
+                    if(out[i]->target->searchDfs(str,beginpos,acpos,pos,smatch,isLazy,flag))
+                    {
+                        result = true;
+                    }
+                }
+            }
                 break;
             default:
                 break;

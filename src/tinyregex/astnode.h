@@ -156,7 +156,7 @@ namespace tyre
     enum FunctionType
     {
         CAPTURE,
-        NAMECAPTURE,
+        NAMEDCAPTURE,
         NOCAPTURE,
         FOREWARD_POSITIVE_CAPTURE,
         FOREWARD_NEGATIVE_CAPTURE,
@@ -173,6 +173,7 @@ namespace tyre
     public:
         ExpFunction():ExpBase(),subexp(nullptr){}
         ExpBase * subexp;
+        string_t name;
         FunctionType type;
         virtual void release()
         {
@@ -193,6 +194,14 @@ namespace tyre
                 graph->addBeginCapture(result.begin,firstMidState);
                 subexp->generate(graph,NfaGraph(firstMidState,secondMidState));
                 graph->addEndCapture(secondMidState,result.end);
+            }
+            else if(type==FunctionType::NAMEDCAPTURE)
+            {
+                State * firstMidState=graph->addState();
+                State * secondMidState=graph->addState();
+                graph->addBeginNamedCapture(result.begin,firstMidState,name);
+                subexp->generate(graph,NfaGraph(firstMidState,secondMidState));
+                graph->addEndNamedCapture(secondMidState,result.end,name);
             }
             else if(type==FunctionType::NOCAPTURE)
             {

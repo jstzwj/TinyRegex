@@ -39,6 +39,7 @@ namespace tyre
         ExpBase * parseLoop(const string_t & pattern,int &curpos);
         bool parseSeqChar(const string_t & pattern, int &curpos, CharRange *charRange);
         ExpBase * parseCharSet(const string_t & pattern,int &curpos);
+        string_t parseName(const string_t & pattern,int &curpos);
         //tools
         bool isChar(const string_t & pattern,int &curpos,char_t c);
         bool isStr(const string_t & pattern,int &curpos,const string_t & str);

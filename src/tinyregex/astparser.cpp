@@ -145,6 +145,18 @@ namespace tyre
                 function->subexp=exp;
                 function->type=FunctionType::NOCAPTURE;
             }
+            else if(isStr(pattern,curpos,T("?<")))
+            {
+                function->name=parseName(pattern,curpos);
+                if(!isChar(pattern,curpos,T('>')))
+                {
+                    delete function;
+                    throw RegexError(ErrorCode::error_name);
+                }
+                exp=this->parseExp(pattern,curpos);
+                function->subexp=exp;
+                function->type=FunctionType::NAMEDCAPTURE;
+            }
             else
             {
                 exp=this->parseExp(pattern,curpos);
@@ -397,8 +409,50 @@ namespace tyre
                 case T('D'):
                     range->rangles.push_back(CharRange(T('0'),T('9'),true));
                     break;
+                //name or number capture reference
+                case T('k'):
+                {
+                    int curpos_saver=curpos;
+                    curpos++;
+                    if(isChar(pattern,curpos,T('\'')))
+                    {
+                        string_t name=parseName(pattern,curpos);
+                        if(isChar(pattern,curpos,T('\'')))
+                        {
+                            delete range;
+                            ExpNamedCaptureReference * capRef=new ExpNamedCaptureReference;
+                            capRef->name=name;
+                            return capRef;
+                        }
+                        else
+                        {
+                            //"\k'" rollback
+                            curpos=curpos_saver;
+                            range->rangles.push_back(CharRange(pattern[curpos],pattern[curpos],false));
+                        }
+                    }
+                    else
+                    {
+                        int num=getPositiveInt(pattern,curpos);
+                        if(num!=-1)
+                        {
+                            delete range;
+                            ExpCaptureReference * capRef=new ExpCaptureReference;
+                            capRef->pos=num;
+                            return capRef;
+                        }
+                        else
+                        {
+                            //"\k'" rollback
+                            curpos=curpos_saver;
+                            range->rangles.push_back(CharRange(pattern[curpos],pattern[curpos],false));
+                        }
+                    }
+                    break;
+                }
                 default:
                     range->rangles.push_back(CharRange(pattern[curpos],pattern[curpos],false));
+                    break;
                 }
                 ++curpos;
                 return range;
@@ -465,6 +519,18 @@ namespace tyre
                 return range;
             }
         }
+    }
+
+    string_t AstParser::parseName(const string_t &pattern, int &curpos)
+    {
+        string_t result;
+        while(pattern[curpos]!=T('>')&&
+              pattern[curpos]!=T('\''))
+        {
+            result.push_back(pattern[curpos]);
+            ++curpos;
+        }
+        return result;
     }
 
     bool AstParser::isChar(const string_t &pattern, int &curpos, char_t c)
