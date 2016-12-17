@@ -36,7 +36,7 @@ namespace tyre
 
         newTransition->source=start;
         newTransition->target=end;
-        newTransition->passCounter=0;
+        //newTransition->passCounter=0;
 
         transitions.push_back(newTransition);
         start->out.push_back(newTransition);
@@ -121,6 +121,22 @@ namespace tyre
     {
         Transition * newTransition=addTransition(start,end);
         newTransition->type=TransitionType::ENDCAPTURE;
+        return newTransition;
+    }
+
+    Transition *Automaton::addCaptureReference(State *start, State *end, int pos)
+    {
+        Transition * newTransition=addTransition(start,end);
+        newTransition->type=TransitionType::CaptureReference;
+        newTransition->captureNum=pos;
+        return newTransition;
+    }
+
+    Transition *Automaton::addCaptureReference(State *start, State *end, const string_t &name)
+    {
+        Transition * newTransition=addTransition(start,end);
+        newTransition->type=TransitionType::NameCaptureReference;
+        newTransition->captureName=new string_t(name);
         return newTransition;
     }
 

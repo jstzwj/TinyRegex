@@ -138,7 +138,7 @@ namespace tyre
         {
             ExpBase * exp=nullptr;
             ExpFunction * function=new ExpFunction;
-            if(isChar(pattern,curpos,T('?'))==true||
+            if(isStr(pattern,curpos,T("?:"))==true||
                     ((flag&SyntaxFlag::NOSUBS)!=0))//if enable nosubs option
             {
                 exp=this->parseExp(pattern,curpos);
@@ -486,20 +486,22 @@ namespace tyre
 
     bool AstParser::isStr(const string_t &pattern, int &curpos, const string_t &str)
     {
-        int postmp=curpos;
+        int pattern_postmp=curpos;
+        int str_postmp=0;
         int pattern_len=pattern.length();
         int str_len=str.length();
-        while(postmp<pattern_len&&postmp<str_len)
+        while(pattern_postmp<pattern_len&&str_postmp<str_len)
         {
-            if(pattern[postmp]!=str[postmp])
+            if(pattern[pattern_postmp]!=str[str_postmp])
             {
                 break;
             }
-            ++postmp;
+            ++str_postmp;
+            ++pattern_postmp;
         }
-        if(postmp==str_len)
+        if(str_postmp==str_len)
         {
-            curpos=postmp;
+            curpos=pattern_postmp;
             return true;
         }
         else

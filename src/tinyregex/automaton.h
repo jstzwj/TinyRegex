@@ -27,6 +27,8 @@ namespace tyre
         ENDLINE,
         BEGINCAPTURE,
         ENDCAPTURE,
+        CaptureReference,
+        NameCaptureReference,
         END
     };
     /**
@@ -232,17 +234,22 @@ namespace tyre
     {
     public:
         Transition()
-            :source(nullptr),target(nullptr){}
+            :source(nullptr),target(nullptr),range(),captureNum(0),captureName(nullptr){}
         Transition(State * src,State * tar)
-            :source(src),target(tar){}
+            :source(src),target(tar),range(),captureNum(0),captureName(nullptr){}
         Transition(State * src,State * tar,const CharRange &ran)
-            :source(src),target(tar),range(ran){}
+            :source(src),target(tar),range(ran),captureNum(0),captureName(nullptr){}
         Transition(const Transition &)=delete;
+
+        ~Transition(){if(captureName!=nullptr)delete captureName;}
 
         State * source;
         State * target;
         CharRange range;
-        int passCounter;
+
+        int captureNum;
+        string_t * captureName;
+
         TransitionType type;
     };
     /**
@@ -301,6 +308,8 @@ namespace tyre
         Transition *addEndLine(State *start, State *end);
         Transition *addBeginCapture(State *start, State *end);
         Transition *addEndCapture(State *start, State *end);
+        Transition *addCaptureReference(State *start, State *end,int pos);//reference
+        Transition *addCaptureReference(State *start, State *end, const string_t &name);//named reference
         //static member functions
         static Automaton NfaToDfa(const Automaton &automaton);
     };

@@ -315,6 +315,30 @@ namespace tyre
         }
         virtual ~ExpEndLine(){}
     };
+    class ExpCaptureReference:public ExpBase
+    {
+    public:
+        ExpCaptureReference(){}
+        int pos;
+        virtual void release(){delete this;}
+        virtual void generate(Automaton * graph,NfaGraph result)
+        {
+            graph->addCaptureReference(result.begin,result.end,pos);
+        }
+        virtual ~ExpCaptureReference(){}
+    };
+    class ExpNamedCaptureReference:public ExpBase
+    {
+    public:
+        ExpNamedCaptureReference(){}
+        string_t name;
+        virtual void release(){delete this;}
+        virtual void generate(Automaton * graph,NfaGraph result)
+        {
+            graph->addCaptureReference(result.begin,result.end,name);
+        }
+        virtual ~ExpNamedCaptureReference(){}
+    };
     class ExpLoop:public ExpBase
     {
     public:
