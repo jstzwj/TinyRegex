@@ -52,7 +52,8 @@ supported escaping sequences:
 |   `\+`  |   `+`  |
 |   `\$`  |   `$`  |
 |   `\^`  |   `^`  |
-
+|   `\kNumber`  |  refer a capture |
+|   `\k'...'`  |  refer a named capture |
 
 
 supported capture:
@@ -60,7 +61,8 @@ supported capture:
 | capture | describe |
 |:-------:|:--------:|
 |  `(...)`  |  capture to an array |
-|  `(?...)` | no capture |
+|  `(?<...>...)` | named capture |
+|  `(?:...)` | no capture |
 
 
 ##Match and compile option
