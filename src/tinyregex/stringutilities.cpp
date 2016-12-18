@@ -7,7 +7,7 @@ namespace tyre
 
     }
     bool StringUtilities::isStr(const string_t &pattern,
-                                      int curpos,
+                                      int &curpos,
                                       const string_t &str,
                                       int str_begin,
                                       int str_end)
@@ -26,7 +26,7 @@ namespace tyre
         }
         if(str_postmp==str_end+1)
         {
-            //curpos=pattern_postmp;
+            curpos=pattern_postmp;
             return true;
         }
         else
