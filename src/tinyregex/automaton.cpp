@@ -452,15 +452,19 @@ namespace tyre
                 }
                 break;
             case TransitionType::ENDCAPTURE:
+                if(!smatch.captureResult.empty())
+                {
+                    //非惰性
+                    if(smatch.captureResult.back().end<acpos)
+                        smatch.captureResult.back().end=acpos;
+                }
                 if(out[i]->target->searchDfs(str,beginpos,acpos,pos,smatch,isLazy,flag))
                 {
-                    if(!smatch.captureResult.empty())
-                    {
-                        //非惰性
-                        if(smatch.captureResult.back().end<acpos)
-                            smatch.captureResult.back().end=acpos;
-                    }
                     result = true;
+                }
+                else
+                {
+                    smatch.captureResult.back().end=end_saver;
                 }
                 break;
             case TransitionType::BEGIN_NAMED_CAPTURE:
@@ -475,13 +479,18 @@ namespace tyre
                 }
                 break;
             case TransitionType::END_NAMED_CAPTURE:
+                if(smatch.namedCaptureResult.find(*(out[i]->captureName))!=smatch.namedCaptureResult.end())
+                {
+                    smatch.namedCaptureResult[*(out[i]->captureName)].end=acpos;
+                }
                 if(out[i]->target->searchDfs(str,beginpos,acpos,pos,smatch,isLazy,flag))
                 {
-                    if(smatch.namedCaptureResult.find(*(out[i]->captureName))!=smatch.namedCaptureResult.end())
-                    {
-                        smatch.namedCaptureResult[*(out[i]->captureName)].end=acpos;
-                    }
                     result = true;
+                }
+                else
+                {
+                    smatch.namedCaptureResult[*(out[i]->captureName)].end=
+                            smatch.namedCaptureResult[*(out[i]->captureName)].begin;
                 }
                 break;
             case TransitionType::CAPTURE_REFERENCE:

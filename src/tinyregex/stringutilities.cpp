@@ -26,7 +26,7 @@ namespace tyre
         }
         if(str_postmp==str_end+1)
         {
-            //curpos=str_postmp;
+            //curpos=pattern_postmp;
             return true;
         }
         else
