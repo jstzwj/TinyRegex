@@ -371,6 +371,12 @@ namespace tyre
                 case T('n'):
                     range->rangles.push_back(CharRange(T('\n'),T('\n')));
                     break;
+                case T('f'):
+                    range->rangles.push_back(CharRange(T('\f'),T('\f')));
+                    break;
+                case T('v'):
+                    range->rangles.push_back(CharRange(T('\v'),T('\v')));
+                    break;
                 //key words
                 case T('\\'):
                 case T('('):
