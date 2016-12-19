@@ -73,7 +73,9 @@ supported capture:
         DEFAULT=0x0,        
         //supported
 
-        DFA_AUTOMATON=0x1,  //&~DFA_AUTOMATON
+        //DFA_AUTOMATON=0x1,  //&~DFA_AUTOMATON
+        //removed
+
         ICASE=0x2,          //Character matching should be performed without regard to case. 
         //supported
 
@@ -84,12 +86,14 @@ supported capture:
         COLLATE=0x10,
         MULTILINE=0x20,	//Specifies that ^ shall match the beginning of a line and $ shall match the end of a line.
         //supported
+	
+        //partial supported
 
-        BASIC=0x40,
-        EXTENDS=0x80,
-        AWK=0x100,
-        GREP=0x200,
-        EGREP=0x400
+        BASIC=0x80,
+        EXTENDS=0x100,
+        AWK=0x200,
+        GREP=0x400,
+        EGREP=0x800
     };
     enum MatchFlag
     {
@@ -117,10 +121,10 @@ supported capture:
 
 ##Development process
  
-		*Capture
+		*Capture		��
 		*DFA
 		*bfs match and search
-		*Named capture
+		*Named capture		��
 		*string replace
 		*optimize
 		*posix regexp
@@ -146,8 +150,8 @@ match -- --
 
 
 
-About char set:
-use utf-16: add "#define TINYREGEX_UNICODE" before "base.h";
-use ascii: remove "#define TINYREGEX_UNICODE" in "base.h";
+About char set:</br>
+use utf-16: add "#define TINYREGEX_UNICODE" before "base.h";</br>
+use ascii: remove "#define TINYREGEX_UNICODE" in "base.h";</br>
 
 
