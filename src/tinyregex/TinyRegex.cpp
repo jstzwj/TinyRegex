@@ -40,17 +40,19 @@ namespace tyre
             if(graph!=nullptr)
             {
                 delete graph;
+                graph=nullptr;
             }
             graph=new Automaton;
-            //Clean ast after generating the automaton.
-            if(root!=nullptr)
-            {
-                delete root;
-            }
             nfa.begin=graph->addState();
             nfa.end=graph->addState();
             root->generate(graph,nfa);
             nfa.applyToAutomaton(graph);
+            //Clean ast after generating the automaton.
+            if(root!=nullptr)
+            {
+                delete root;
+                root=nullptr;
+            }
         }
         catch(const std::bad_alloc& ba)
         {
@@ -58,19 +60,21 @@ namespace tyre
         }
     }
 
-    bool TinyRegex::match(const tyre::string_t &str)
+    bool TinyRegex::match(const tyre::string_t &str, MatchFlag flag)
     {
         RegexSubMatch smatch;
-        return graph->beginState->match(str,0,smatch);
+        RegexSearch matchAutomaton(smatch,flag);
+        return matchAutomaton.match(graph->beginState,str,0);
     }
 
-    RegexResult TinyRegex::search(const string_t &str)
+    RegexResult TinyRegex::search(const string_t &str, MatchFlag flag)
     {
         RegexResult result;
         for(unsigned int i=0;i<str.length();++i)
         {
             RegexSubMatch smatch;
-            if(graph->beginState->search(str,i,smatch)==true)
+            RegexSearch searchAutomaton(smatch,flag);
+            if(searchAutomaton.search(graph->beginState,str,i)==true)
             {
                 result.subMatch.push_back(smatch);
                 i=smatch.end;
