@@ -1,5 +1,5 @@
-#include <iostream>
-#include"tinyregex.h"
+﻿#include <iostream>
+#include"../src/tinyregex/tinyregex.h"
 #include<cassert>
 
 #include<ctime>
