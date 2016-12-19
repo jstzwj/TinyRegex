@@ -5,18 +5,19 @@ namespace tyre
 {
     enum SyntaxFlag
     {
-        DEFAULT=0x0,
-        DFA_AUTOMATON=0x1,  //&~DFA_AUTOMATON
+        DEFAULT=0x40,
+        //DFA_AUTOMATON=0x1,  &~DFA_AUTOMATON
         ICASE=0x2,          //Character matching should be performed without regard to case. 
         NOSUBS=0x4,         //
         OPTIMIZE=0x8,
         COLLATE=0x10,
         MULTILINE=0x20,
-        BASIC=0x40,
-        EXTENDS=0x80,
-        AWK=0x100,
-        GREP=0x200,
-        EGREP=0x400
+        ECMASCRIPT=0x40,
+        BASIC=0x80,
+        EXTENDS=0x100,
+        AWK=0x200,
+        GREP=0x400,
+        EGREP=0x800
         
     };
     enum MatchFlag

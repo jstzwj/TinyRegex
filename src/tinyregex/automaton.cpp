@@ -163,7 +163,7 @@ namespace tyre
         return dfa;
     }
 
-    bool State::match(const string_t &str, int pos, MatchFlag flag)
+    bool State::match(const string_t &str, int pos, RegexSubMatch & smatch, MatchFlag flag)
     {
         //empty string
         if((flag&MatchFlag::MATCH_NOT_NULL)!=0&&str.length()==0)
@@ -173,11 +173,11 @@ namespace tyre
         //match way choose
         if((flag&MatchFlag::MATCH_BFS)==0)
         {
-            return matchDfs(str,pos,flag);
+            return matchDfs(str,pos-1,pos,smatch,flag);
         }
         else
         {
-            return matchBfs(str,pos,flag);
+            return matchBfs(str,pos,smatch,flag);
         }
     }
 
@@ -201,7 +201,7 @@ namespace tyre
         }
     }
 
-    bool State::matchBfs(const string_t &str, int pos, MatchFlag flag)
+    bool State::matchBfs(const string_t &str, int pos, RegexSubMatch &smatch, MatchFlag flag)
     {
         std::vector<State *> saveStack;
 
@@ -218,7 +218,7 @@ namespace tyre
         return true;
     }
 
-    bool State::matchDfs(const string_t &str, int pos,MatchFlag flag)
+    bool State::matchDfs(const string_t &str,int acpos,int pos,RegexSubMatch & smatch,MatchFlag flag)
     {
         bool result(false);
         if((unsigned int)pos==str.length())
@@ -240,14 +240,14 @@ namespace tyre
                 if(out[i]->range.isSubSet(str[pos])||
                         out[i]->type==TransitionType::EMPTY)    //flag :may be a bug
                 {
-                    if(out[i]->target->matchDfs(str,pos+1,flag))
+                    if(out[i]->target->matchDfs(str,acpos+1,pos+1,smatch,flag))
                     {
                         result = true;
                     }
                 }
                 break;
             case TransitionType::EMPTY:
-                if(out[i]->target->matchDfs(str,pos,flag))
+                if(out[i]->target->matchDfs(str,acpos,pos,smatch,flag))
                 {
                     result = true;
                 }
@@ -255,7 +255,7 @@ namespace tyre
             case TransitionType::BEGINLINE:
                 if(str[pos-1]==T('\n')||str[pos-1]==T('\r'))
                 {
-                    if(out[i]->target->matchDfs(str,pos,flag))
+                    if(out[i]->target->matchDfs(str,acpos,pos,smatch,flag))
                     {
                         result = true;
                     }
@@ -266,7 +266,7 @@ namespace tyre
                 {
                     if(pos==0)
                     {
-                        if(out[i]->target->matchDfs(str,pos,flag))
+                        if(out[i]->target->matchDfs(str,acpos,pos,smatch,flag))
                         {
                             result = true;
                         }
@@ -277,7 +277,7 @@ namespace tyre
                 //有点反直觉啊。。。以后改
                 if(str[pos]==T('\n')||str[pos]==T('\r'))
                 {
-                    if(out[i]->target->matchDfs(str,pos,flag))
+                    if(out[i]->target->matchDfs(str,acpos,pos,smatch,flag))
                     {
                         result = true;
                     }
@@ -289,7 +289,7 @@ namespace tyre
                 {
                     if((unsigned int)pos==str.length())
                     {
-                        if(out[i]->target->matchDfs(str,pos,flag))
+                        if(out[i]->target->matchDfs(str,acpos,pos,smatch,flag))
                         {
                             result = true;
                         }
@@ -297,43 +297,98 @@ namespace tyre
                 }
                 break;
             case TransitionType::BEGINCAPTURE:
-                if(out[i]->target->matchDfs(str,pos,flag))
+                smatch.captureResult.push_back(RegexPosition(acpos+1,acpos+1));//acpos
+                if(out[i]->target->matchDfs(str,acpos,pos,smatch,flag))
                 {
                     result = true;
+                }
+                else
+                {
+                    smatch.captureResult.pop_back();
                 }
                 break;
             case TransitionType::ENDCAPTURE:
-                if(out[i]->target->matchDfs(str,pos,flag))
+            {
+                int back_saver;
+                if(!smatch.captureResult.empty())
+                {
+                    back_saver=smatch.captureResult.back().end;
+                    //非惰性
+                    if(smatch.captureResult.back().end<acpos)//acpos
+                        smatch.captureResult.back().end=acpos;//acpos
+                }
+                if(out[i]->target->matchDfs(str,acpos,pos,smatch,flag))
                 {
                     result = true;
                 }
+                else
+                {
+                    smatch.captureResult.back().end=back_saver;
+                }
+            }
                 break;
             case TransitionType::BEGIN_NAMED_CAPTURE:
-                if(out[i]->target->matchDfs(str,pos,flag))
+                smatch.namedCaptureResult.insert(std::make_pair(*(out[i]->captureName),RegexPosition(acpos+1,acpos+1)));//acpos
+                if(out[i]->target->matchDfs(str,acpos,pos,smatch,flag))
                 {
                     result = true;
+                }
+                else
+                {
+                    smatch.namedCaptureResult.erase(*(out[i]->captureName));
                 }
                 break;
             case TransitionType::END_NAMED_CAPTURE:
-                if(out[i]->target->matchDfs(str,pos,flag))
+            {
+                int back_saver;
+                if(smatch.namedCaptureResult.find(*(out[i]->captureName))!=smatch.namedCaptureResult.end())
+                {
+                    back_saver=smatch.namedCaptureResult[*(out[i]->captureName)].end;
+                    if(smatch.namedCaptureResult[*(out[i]->captureName)].end<acpos)//acpos
+                        smatch.namedCaptureResult[*(out[i]->captureName)].end=acpos;//acpos
+                }
+                if(out[i]->target->matchDfs(str,acpos,pos,smatch,flag))
                 {
                     result = true;
                 }
+                else
+                {
+                    smatch.namedCaptureResult[*(out[i]->captureName)].end=back_saver;
+                }
+            }
                 break;
             case TransitionType::CAPTURE_REFERENCE:
-                //if(StringUtilities::isStr(str,pos))
+            {
+                int num=out[i]->captureNum;
+                if(StringUtilities::isStr(str,
+                                          pos,
+                                          str,
+                                          smatch.captureResult[num].begin,
+                                          smatch.captureResult[num].end))
                 {
-                    if(out[i]->target->matchDfs(str,pos,flag))
+                    //Pay attention to the acpos is pos-1.
+                    if(out[i]->target->matchDfs(str,pos-1,pos,smatch,flag))
                     {
                         result = true;
                     }
                 }
+            }
                 break;
             case TransitionType::NAME_CAPTURE_REFERENCE:
-                if(out[i]->target->matchDfs(str,pos,flag))
+            {
+                string_t & name=*(out[i]->captureName);
+                if(StringUtilities::isStr(str,
+                                          pos,
+                                          str,
+                                          smatch.namedCaptureResult[name].begin,
+                                          smatch.namedCaptureResult[name].end))
                 {
-                    result = true;
+                    if(out[i]->target->matchDfs(str,pos-1,pos,smatch,flag))
+                    {
+                        result = true;
+                    }
                 }
+            }
                 break;
             default:
                 break;
@@ -395,7 +450,7 @@ namespace tyre
             case TransitionType::BEGINLINE:
                 if(str[pos-1]==T('\n')||str[pos-1]==T('\r'))
                 {
-                    if(out[i]->target->matchDfs(str,pos,flag))
+                    if(out[i]->target->matchDfs(str,acpos,pos,smatch,flag))
                     {
                         result = true;
                     }
@@ -417,7 +472,7 @@ namespace tyre
                 //有点反直觉啊。。。以后改
                 if(str[pos]==T('\n')||str[pos]==T('\r'))
                 {
-                    if(out[i]->target->matchDfs(str,pos,flag))
+                    if(out[i]->target->matchDfs(str,acpos,pos,smatch,flag))
                     {
                         result = true;
                     }
@@ -528,6 +583,7 @@ namespace tyre
                                           smatch.namedCaptureResult[name].begin,
                                           smatch.namedCaptureResult[name].end))
                 {
+                    //Pay attention to the acpos is pos-1.
                     if(out[i]->target->searchDfs(str,beginpos,pos-1,pos,smatch,isLazy,flag))
                     {
                         result = true;

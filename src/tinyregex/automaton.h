@@ -279,11 +279,11 @@ namespace tyre
             :out(),in(),isEndState(false){}
         State(const State &)=delete;
 
-        bool match(const string_t &str, int pos,MatchFlag flag=MatchFlag::MATCH_DEFAULT);
+        bool match(const string_t &str, int pos, RegexSubMatch & smatch,MatchFlag flag=MatchFlag::MATCH_DEFAULT);
         bool search(const string_t &str, int pos, RegexSubMatch &smatch,MatchFlag flag=MatchFlag::MATCH_DEFAULT);
     private:
-        bool matchDfs(const string_t &str, int pos,MatchFlag flag=MatchFlag::MATCH_DEFAULT);
-        bool matchBfs(const string_t &str, int pos,MatchFlag flag=MatchFlag::MATCH_DEFAULT);
+        bool matchDfs(const string_t &str, int acpos, int pos, RegexSubMatch &smatch, MatchFlag flag=MatchFlag::MATCH_DEFAULT);
+        bool matchBfs(const string_t &str, int pos,RegexSubMatch & smatch,MatchFlag flag=MatchFlag::MATCH_DEFAULT);
         bool searchDfs(const string_t &str, int beginpos, int acpos, int pos, RegexSubMatch &smatch, bool isLazy, MatchFlag flag=MatchFlag::MATCH_DEFAULT);
         bool searchBfs(const string_t &str, int acpos, int pos, RegexSubMatch &smatch, bool isLazy, MatchFlag flag=MatchFlag::MATCH_DEFAULT);
     };

@@ -219,6 +219,13 @@ int main(int argc, char *argv[])
     assert(1==set.subMatch[0].captureResult[0].begin);
     assert(3==set.subMatch[0].captureResult[0].end);
 
+    r.compile(T("c(.*)abc\\k0"));
+    assert(true==r.match(T("c123abc123")));
+    assert(false==r.match(T("c1234")));
+    assert(false==r.match(T("c23abc24")));
+    assert(true==r.match(T("cabcabcabc")));
+
+
     //named capture ref test
     r.compile(T("c(?<anything>.+)\\k\'anything\'"));
     set=r.search(T("cadeade"));

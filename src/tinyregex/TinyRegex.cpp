@@ -59,7 +59,8 @@ namespace tyre
 
     bool TinyRegex::match(const tyre::string_t &str)
     {
-        return graph->beginState->match(str,0);
+        RegexSubMatch smatch;
+        return graph->beginState->match(str,0,smatch);
     }
 
     RegexResult TinyRegex::search(const string_t &str)
