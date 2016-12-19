@@ -35,17 +35,18 @@ namespace tyre
         try
         {
             AstParser parser(flag);
-            if(root!=nullptr)
-            {
-                delete root;
-            }
             root=parser.parse(pattern);
+            //Clean lastest automaton.
             if(graph!=nullptr)
             {
                 delete graph;
             }
             graph=new Automaton;
-
+            //Clean ast after generating the automaton.
+            if(root!=nullptr)
+            {
+                delete root;
+            }
             nfa.begin=graph->addState();
             nfa.end=graph->addState();
             root->generate(graph,nfa);

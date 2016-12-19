@@ -234,20 +234,20 @@ namespace tyre
         }
         for(unsigned int i=0;i<out.size();++i)
         {
-            switch(out[i]->type)
+            Transition &curTransition=*out[i];
+            switch(curTransition.type)
             {
             case TransitionType::CHARS:
-                if(out[i]->range.isSubSet(str[pos])||
-                        out[i]->type==TransitionType::EMPTY)    //flag :may be a bug
+                if(curTransition.range.isSubSet(str[pos]))
                 {
-                    if(out[i]->target->matchDfs(str,acpos+1,pos+1,smatch,flag))
+                    if(curTransition.target->matchDfs(str,acpos+1,pos+1,smatch,flag))
                     {
                         result = true;
                     }
                 }
                 break;
             case TransitionType::EMPTY:
-                if(out[i]->target->matchDfs(str,acpos,pos,smatch,flag))
+                if(curTransition.target->matchDfs(str,acpos,pos,smatch,flag))
                 {
                     result = true;
                 }
@@ -255,7 +255,7 @@ namespace tyre
             case TransitionType::BEGINLINE:
                 if(str[pos-1]==T('\n')||str[pos-1]==T('\r'))
                 {
-                    if(out[i]->target->matchDfs(str,acpos,pos,smatch,flag))
+                    if(curTransition.target->matchDfs(str,acpos,pos,smatch,flag))
                     {
                         result = true;
                     }
@@ -266,7 +266,7 @@ namespace tyre
                 {
                     if(pos==0)
                     {
-                        if(out[i]->target->matchDfs(str,acpos,pos,smatch,flag))
+                        if(curTransition.target->matchDfs(str,acpos,pos,smatch,flag))
                         {
                             result = true;
                         }
@@ -274,22 +274,20 @@ namespace tyre
                 }
                 break;
             case TransitionType::ENDLINE:
-                //有点反直觉啊。。。以后改
                 if(str[pos]==T('\n')||str[pos]==T('\r'))
                 {
-                    if(out[i]->target->matchDfs(str,acpos,pos,smatch,flag))
+                    if(curTransition.target->matchDfs(str,acpos,pos,smatch,flag))
                     {
                         result = true;
                     }
                 }
                 //attention no break
             case TransitionType::ENDSTRING:
-
                 if((flag&MATCH_NOT_EOL)==0)
                 {
                     if((unsigned int)pos==str.length())
                     {
-                        if(out[i]->target->matchDfs(str,acpos,pos,smatch,flag))
+                        if(curTransition.target->matchDfs(str,acpos,pos,smatch,flag))
                         {
                             result = true;
                         }
@@ -297,8 +295,8 @@ namespace tyre
                 }
                 break;
             case TransitionType::BEGINCAPTURE:
-                smatch.captureResult.push_back(RegexPosition(acpos+1,acpos+1));//acpos
-                if(out[i]->target->matchDfs(str,acpos,pos,smatch,flag))
+                smatch.captureResult.push_back(RegexPosition(acpos+1,acpos+1));
+                if(curTransition.target->matchDfs(str,acpos,pos,smatch,flag))
                 {
                     result = true;
                 }
@@ -309,83 +307,97 @@ namespace tyre
                 break;
             case TransitionType::ENDCAPTURE:
             {
-                int back_saver;
+                RegexPosition * topCapture=nullptr;
+                int back_saver=0;
                 if(!smatch.captureResult.empty())
                 {
-                    back_saver=smatch.captureResult.back().end;
-                    //非惰性
-                    if(smatch.captureResult.back().end<acpos)//acpos
-                        smatch.captureResult.back().end=acpos;//acpos
+                    topCapture=&smatch.captureResult.back();
+                    back_saver=topCapture->end;
+                    //no greedy
+                    if(topCapture->end<acpos)
+                        topCapture->end=acpos;
+
+                    if(curTransition.target->matchDfs(str,acpos,pos,smatch,flag))
+                    {
+                        result = true;
+                    }
+                    else
+                    {
+                        topCapture->end=back_saver;
+                    }
                 }
-                if(out[i]->target->matchDfs(str,acpos,pos,smatch,flag))
-                {
-                    result = true;
-                }
-                else
-                {
-                    smatch.captureResult.back().end=back_saver;
-                }
+
             }
                 break;
             case TransitionType::BEGIN_NAMED_CAPTURE:
-                smatch.namedCaptureResult.insert(std::make_pair(*(out[i]->captureName),RegexPosition(acpos+1,acpos+1)));//acpos
-                if(out[i]->target->matchDfs(str,acpos,pos,smatch,flag))
+                smatch.namedCaptureResult.insert(std::make_pair(*(curTransition.captureName),RegexPosition(acpos+1,acpos+1)));//acpos
+                if(curTransition.target->matchDfs(str,acpos,pos,smatch,flag))
                 {
                     result = true;
                 }
                 else
                 {
-                    smatch.namedCaptureResult.erase(*(out[i]->captureName));
+                    smatch.namedCaptureResult.erase(*(curTransition.captureName));
                 }
                 break;
             case TransitionType::END_NAMED_CAPTURE:
             {
-                int back_saver;
-                if(smatch.namedCaptureResult.find(*(out[i]->captureName))!=smatch.namedCaptureResult.end())
+                RegexPosition * topNamedCapture=nullptr;
+                int back_saver=0;
+                if(smatch.namedCaptureResult.find(*(curTransition.captureName))!=smatch.namedCaptureResult.end())
                 {
-                    back_saver=smatch.namedCaptureResult[*(out[i]->captureName)].end;
-                    if(smatch.namedCaptureResult[*(out[i]->captureName)].end<acpos)//acpos
-                        smatch.namedCaptureResult[*(out[i]->captureName)].end=acpos;//acpos
-                }
-                if(out[i]->target->matchDfs(str,acpos,pos,smatch,flag))
-                {
-                    result = true;
-                }
-                else
-                {
-                    smatch.namedCaptureResult[*(out[i]->captureName)].end=back_saver;
+                    topNamedCapture=&smatch.namedCaptureResult[*(curTransition.captureName)];
+                    back_saver=topNamedCapture->end;
+                    if(topNamedCapture->end<acpos)
+                        topNamedCapture->end=acpos;
+
+
+                    if(curTransition.target->matchDfs(str,acpos,pos,smatch,flag))
+                    {
+                        result = true;
+                    }
+                    else
+                    {
+                        topNamedCapture->end=back_saver;
+                    }
                 }
             }
                 break;
             case TransitionType::CAPTURE_REFERENCE:
             {
-                int num=out[i]->captureNum;
-                if(StringUtilities::isStr(str,
-                                          pos,
-                                          str,
-                                          smatch.captureResult[num].begin,
-                                          smatch.captureResult[num].end))
+                int num=curTransition.captureNum;
+                if((num>=0)&&((unsigned)num<smatch.captureResult.size()))
                 {
-                    //Pay attention to the acpos is pos-1.
-                    if(out[i]->target->matchDfs(str,pos-1,pos,smatch,flag))
+                    if(StringUtilities::isStr(str,
+                                              pos,
+                                              str,
+                                              smatch.captureResult[num].begin,
+                                              smatch.captureResult[num].end))
                     {
-                        result = true;
+                        //Pay attention to the acpos is pos-1.
+                        if(curTransition.target->matchDfs(str,pos-1,pos,smatch,flag))
+                        {
+                            result = true;
+                        }
                     }
                 }
             }
                 break;
             case TransitionType::NAME_CAPTURE_REFERENCE:
             {
-                string_t & name=*(out[i]->captureName);
-                if(StringUtilities::isStr(str,
-                                          pos,
-                                          str,
-                                          smatch.namedCaptureResult[name].begin,
-                                          smatch.namedCaptureResult[name].end))
+                string_t & name=*(curTransition.captureName);
+                if(smatch.namedCaptureResult.find(name)!=smatch.namedCaptureResult.end())
                 {
-                    if(out[i]->target->matchDfs(str,pos-1,pos,smatch,flag))
+                    if(StringUtilities::isStr(str,
+                                              pos,
+                                              str,
+                                              smatch.namedCaptureResult[name].begin,
+                                              smatch.namedCaptureResult[name].end))
                     {
-                        result = true;
+                        if(curTransition.target->matchDfs(str,pos-1,pos,smatch,flag))
+                        {
+                            result = true;
+                        }
                     }
                 }
             }
@@ -404,7 +416,7 @@ namespace tyre
     bool State::searchDfs(const string_t &str,int beginpos,int acpos, int pos, RegexSubMatch & smatch,bool isLazy,MatchFlag flag)
     {
         bool result(false);
-        if(pos-beginpos>10000)
+        if(pos-beginpos>10000)//replace by macro later
         {
             throw RegexError(ErrorCode::error_stack);
         }
@@ -429,20 +441,19 @@ namespace tyre
         for(unsigned int i=0;i<out.size();++i)
         {
             Transition &curTransition=*out[i];
-            switch(out[i]->type)
+            switch(curTransition.type)
             {
             case TransitionType::CHARS:
-                if(out[i]->range.isSubSet(str[pos]))
+                if(curTransition.range.isSubSet(str[pos]))
                 {
-                    if(out[i]->target->searchDfs(str,beginpos,acpos+1,pos+1,smatch,isLazy,flag))
+                    if(curTransition.target->searchDfs(str,beginpos,acpos+1,pos+1,smatch,isLazy,flag))
                     {
                         result = true;
                     }
-
                 }
                 break;
             case TransitionType::EMPTY:
-                if(out[i]->target->searchDfs(str,beginpos,acpos,pos,smatch,isLazy,flag))
+                if(curTransition.target->searchDfs(str,beginpos,acpos,pos,smatch,isLazy,flag))
                 {
                     result = true;
                 }
@@ -450,7 +461,7 @@ namespace tyre
             case TransitionType::BEGINLINE:
                 if(str[pos-1]==T('\n')||str[pos-1]==T('\r'))
                 {
-                    if(out[i]->target->matchDfs(str,acpos,pos,smatch,flag))
+                    if(curTransition.target->matchDfs(str,acpos,pos,smatch,flag))
                     {
                         result = true;
                     }
@@ -461,7 +472,7 @@ namespace tyre
                 {
                     if(pos==0)
                     {
-                        if(out[i]->target->searchDfs(str,beginpos,acpos,pos,smatch,isLazy,flag))
+                        if(curTransition.target->searchDfs(str,beginpos,acpos,pos,smatch,isLazy,flag))
                         {
                             result = true;
                         }
@@ -469,10 +480,9 @@ namespace tyre
                 }
                 break;
             case TransitionType::ENDLINE:
-                //有点反直觉啊。。。以后改
                 if(str[pos]==T('\n')||str[pos]==T('\r'))
                 {
-                    if(out[i]->target->matchDfs(str,acpos,pos,smatch,flag))
+                    if(curTransition.target->matchDfs(str,acpos,pos,smatch,flag))
                     {
                         result = true;
                     }
@@ -483,7 +493,7 @@ namespace tyre
                 {
                     if((unsigned int)pos==str.length())
                     {
-                        if(out[i]->target->searchDfs(str,beginpos,acpos,pos,smatch,isLazy,flag))
+                        if(curTransition.target->searchDfs(str,beginpos,acpos,pos,smatch,isLazy,flag))
                         {
                             result = true;
                         }
@@ -491,14 +501,14 @@ namespace tyre
                 }
                 break;
             case TransitionType::LAZY:
-                if(out[i]->target->searchDfs(str,beginpos,acpos,pos,smatch,true,flag))
+                if(curTransition.target->searchDfs(str,beginpos,acpos,pos,smatch,true,flag))
                 {
                     result = true;
                 }
                 break;
             case TransitionType::BEGINCAPTURE:
                 smatch.captureResult.push_back(RegexPosition(acpos+1,acpos+1));
-                if(out[i]->target->searchDfs(str,beginpos,acpos,pos,smatch,isLazy,flag))
+                if(curTransition.target->searchDfs(str,beginpos,acpos,pos,smatch,isLazy,flag))
                 {
                     result = true;
                 }
@@ -509,84 +519,98 @@ namespace tyre
                 break;
             case TransitionType::ENDCAPTURE:
             {
-                int back_saver;
+                RegexPosition * topPosition=nullptr;
+                int back_saver=0;
                 if(!smatch.captureResult.empty())
                 {
-                    back_saver=smatch.captureResult.back().end;
-                    //非惰性
-                    if(smatch.captureResult.back().end<acpos)
-                        smatch.captureResult.back().end=acpos;
-                }
-                if(out[i]->target->searchDfs(str,beginpos,acpos,pos,smatch,isLazy,flag))
-                {
-                    result = true;
-                }
-                else
-                {
-                    smatch.captureResult.back().end=back_saver;
+                    topPosition=&smatch.captureResult.back();
+                    back_saver=topPosition->end;
+                    //no greedy
+                    if(topPosition->end<acpos)
+                        topPosition->end=acpos;
+
+
+                    if(curTransition.target->searchDfs(str,beginpos,acpos,pos,smatch,isLazy,flag))
+                    {
+                        result = true;
+                    }
+                    else
+                    {
+                        topPosition->end=back_saver;
+                    }
                 }
             }
                 break;
             case TransitionType::BEGIN_NAMED_CAPTURE:
-                smatch.namedCaptureResult.insert(std::make_pair(*(out[i]->captureName),RegexPosition(acpos+1,acpos+1)));
-                if(out[i]->target->searchDfs(str,beginpos,acpos,pos,smatch,isLazy,flag))
+                smatch.namedCaptureResult.insert(std::make_pair(*(curTransition.captureName),RegexPosition(acpos+1,acpos+1)));
+                if(curTransition.target->searchDfs(str,beginpos,acpos,pos,smatch,isLazy,flag))
                 {
                     result = true;
                 }
                 else
                 {
-                    smatch.namedCaptureResult.erase(*(out[i]->captureName));
+                    smatch.namedCaptureResult.erase(*(curTransition.captureName));
                 }
                 break;
             case TransitionType::END_NAMED_CAPTURE:
             {
-                int back_saver;
-                if(smatch.namedCaptureResult.find(*(out[i]->captureName))!=smatch.namedCaptureResult.end())
+                RegexPosition * topNamePosition=nullptr;
+                int back_saver=0;
+                if(smatch.namedCaptureResult.find(*(curTransition.captureName))!=smatch.namedCaptureResult.end())
                 {
-                    back_saver=smatch.namedCaptureResult[*(out[i]->captureName)].end;
-                    if(smatch.namedCaptureResult[*(out[i]->captureName)].end<acpos)
-                        smatch.namedCaptureResult[*(out[i]->captureName)].end=acpos;
-                }
-                if(out[i]->target->searchDfs(str,beginpos,acpos,pos,smatch,isLazy,flag))
-                {
-                    result = true;
-                }
-                else
-                {
-                    smatch.namedCaptureResult[*(out[i]->captureName)].end=back_saver;
+                    topNamePosition=&smatch.namedCaptureResult[*(curTransition.captureName)];
+                    back_saver=topNamePosition->end;
+                    if(topNamePosition->end<acpos)
+                        topNamePosition->end=acpos;
+
+
+                    if(curTransition.target->searchDfs(str,beginpos,acpos,pos,smatch,isLazy,flag))
+                    {
+                        result = true;
+                    }
+                    else
+                    {
+                        topNamePosition->end=back_saver;
+                    }
                 }
             }
                 break;
             case TransitionType::CAPTURE_REFERENCE:
             {
-                int num=out[i]->captureNum;
-                if(StringUtilities::isStr(str,
-                                          pos,
-                                          str,
-                                          smatch.captureResult[num].begin,
-                                          smatch.captureResult[num].end))
+                int num=curTransition.captureNum;
+                if((num>=0)&&((unsigned)num<smatch.captureResult.size()))
                 {
-                    //Pay attention to the acpos is pos-1.
-                    if(out[i]->target->searchDfs(str,beginpos,pos-1,pos,smatch,isLazy,flag))
+                    if(StringUtilities::isStr(str,
+                                              pos,
+                                              str,
+                                              smatch.captureResult[num].begin,
+                                              smatch.captureResult[num].end))
                     {
-                        result = true;
+                        //Pay attention to the acpos is pos-1.
+                        if(curTransition.target->searchDfs(str,beginpos,pos-1,pos,smatch,isLazy,flag))
+                        {
+                            result = true;
+                        }
                     }
                 }
             }
                 break;
             case TransitionType::NAME_CAPTURE_REFERENCE:
             {
-                string_t & name=*(out[i]->captureName);
-                if(StringUtilities::isStr(str,
-                                          pos,
-                                          str,
-                                          smatch.namedCaptureResult[name].begin,
-                                          smatch.namedCaptureResult[name].end))
+                string_t & name=*(curTransition.captureName);
+                if(smatch.namedCaptureResult.find(name)!=smatch.namedCaptureResult.end())
                 {
-                    //Pay attention to the acpos is pos-1.
-                    if(out[i]->target->searchDfs(str,beginpos,pos-1,pos,smatch,isLazy,flag))
+                    if(StringUtilities::isStr(str,
+                                              pos,
+                                              str,
+                                              smatch.namedCaptureResult[name].begin,
+                                              smatch.namedCaptureResult[name].end))
                     {
-                        result = true;
+                        //Pay attention to the acpos is pos-1.
+                        if(curTransition.target->searchDfs(str,beginpos,pos-1,pos,smatch,isLazy,flag))
+                        {
+                            result = true;
+                        }
                     }
                 }
             }
