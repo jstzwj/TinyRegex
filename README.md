@@ -1,4 +1,4 @@
-tinyregex
+﻿tinyregex
 ===
 A tiny regular expression library.
 
@@ -87,6 +87,7 @@ supported capture:
         MULTILINE=0x20,	//Specifies that ^ shall match the beginning of a line and $ shall match the end of a line.
         //supported
 	
+        ECMASCRIPT=0x40,
         //partial supported
 
         BASIC=0x80,
@@ -121,10 +122,10 @@ supported capture:
 
 ##Development process
  
-		*Capture		��
+		*Capture		√
 		*DFA
 		*bfs match and search
-		*Named capture		��
+		*Named capture		√
 		*string replace
 		*optimize
 		*posix regexp
