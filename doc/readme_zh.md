@@ -1,12 +1,12 @@
 ﻿tinyregex
 ===
-这是一个小型正则表达式。
+这是一个小型正则表达式引擎。
 #语言
 *[English](https://github.com/jstzwj/TinyRegex/blob/master/doc/readme_en.md) </br>
 *[中文](https://github.com/jstzwj/TinyRegex/blob/master/doc/readme_zh.md)
 
 #环境
-This library is writen in c++ 11. It was tested in MSVC15 and GNUC4.9.2 compiler.
+这个正则表达式引擎使用了部分c++11的特性。它在MSVC15和GNUC4.9.2编译器上测试通过。
 
 #支持的语法
 ## 符号
