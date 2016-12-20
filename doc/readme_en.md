@@ -68,7 +68,8 @@ supported capture:
 |  `(?<...>...)` | named capture |
 |  `(?:...)` | no capture |
 
-Posix Character Classes
+Posix Character Classes:
+
 | class | describe |
 |:-------:|:--------:|
 |  `[:alnum:]`  |  `[0-9a-zA-Z]` |
