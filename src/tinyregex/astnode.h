@@ -404,27 +404,37 @@ namespace tyre
         }
         void generateInfiniteLoop(Automaton *graph, NfaGraph result)
         {
-            graph->addEmptyTransition(result.begin,result.end);
+            //graph->addEmptyTransition(result.begin,result.end);
             exp->generate(graph,NfaGraph(result.end,result.begin));
         }
         virtual void generate(Automaton * graph,NfaGraph result)
         {
-            State* midState=graph->addState();
-            this->generateMustLoop(graph,NfaGraph(result.begin,midState));
-
-            if(this->lazy==true)
-            {
-                State *lazyState=graph->addState();
-                graph->addLazyTransition(midState,lazyState);
-                midState=lazyState;
-            }
-
             if(max==-1)
             {
-                this->generateInfiniteLoop(graph,NfaGraph(midState,result.end));
+                if(this->lazy==true)
+                {
+                    State *lazyState=graph->addState();
+                    this->generateMustLoop(graph,NfaGraph(result.begin,lazyState));
+                    graph->addLazyTransition(lazyState,result.end);
+                    this->generateInfiniteLoop(graph,NfaGraph(result.end,result.end));
+                }
+                else
+                {
+                    this->generateMustLoop(graph,NfaGraph(result.begin,result.end));
+                    this->generateInfiniteLoop(graph,NfaGraph(result.end,result.end));
+                }
             }
             else
             {
+                State* midState=graph->addState();
+                this->generateMustLoop(graph,NfaGraph(result.begin,midState));
+
+                if(this->lazy==true)
+                {
+                    State *lazyState=graph->addState();
+                    graph->addLazyTransition(midState,lazyState);
+                    midState=lazyState;
+                }
                 this->generateAltLoop(graph,NfaGraph(midState,result.end));
             }
         }

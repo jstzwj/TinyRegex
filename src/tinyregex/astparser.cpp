@@ -259,6 +259,7 @@ namespace tyre
             }
             if(!isChar(pattern,curpos,T('}')))
             {
+                delete loop;
                 throw RegexError(ErrorCode::error_brace);
             }
         }
@@ -422,10 +423,12 @@ namespace tyre
                 }
                 else
                 {
+                    delete range;
                     throw RegexError(ErrorCode::error_ctype);
                 }
                 if(!this->isStr(pattern,curpos,T(":]")))
                 {
+                    delete range;
                     throw RegexError(ErrorCode::error_brack);
                 }
             }

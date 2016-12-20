@@ -43,10 +43,22 @@ namespace tyre
                 graph=nullptr;
             }
             graph=new Automaton;
+
+
             nfa.begin=graph->addState();
             nfa.end=graph->addState();
-            root->generate(graph,nfa);
+            //check if root have not ast
+            if(root!=nullptr)
+            {
+                root->generate(graph,nfa);
+            }
+            //check if the nfa have not transition.
+            if(nfa.begin->out.empty())
+            {
+                graph->addEmptyTransition(nfa.begin,nfa.end);
+            }
             nfa.applyToAutomaton(graph);
+
             //Clean ast after generating the automaton.
             if(root!=nullptr)
             {
