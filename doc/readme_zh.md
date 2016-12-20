@@ -2,8 +2,8 @@
 ===
 这是一个小型正则表达式。
 #语言
-*[English](https://github.com/jstzwj/TinyRegex/blob/master/README.md) </br>
-*[中文](http://)
+*[English](https://github.com/jstzwj/TinyRegex/blob/master/doc/readme_en.md) </br>
+*[中文](https://github.com/jstzwj/TinyRegex/blob/master/doc/readme_zh.md)
 
 #环境
 This library is writen in c++ 11. It was tested in MSVC15 and GNUC4.9.2 compiler.
@@ -67,7 +67,8 @@ This library is writen in c++ 11. It was tested in MSVC15 and GNUC4.9.2 compiler
 |  `(?<...>...)` | 命名捕获 |
 |  `(?:...)` | 不捕获 |
 
-Posix 字符类
+Posix 字符类:
+
 | 字符类 | 描述 |
 |:-------:|:--------:|
 |  `[:alnum:]`  |  `[0-9a-zA-Z]` |
