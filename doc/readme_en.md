@@ -3,8 +3,8 @@
 A tiny regular expression library.
 
 #Language
-*[English](https://github.com/jstzwj/TinyRegex/blob/master/README.md) </br>
-*[中文](http://)
+*[English](https://github.com/jstzwj/TinyRegex/blob/master/doc/readme_en.md) </br>
+*[中文](https://github.com/jstzwj/TinyRegex/blob/master/doc/readme_zh.md)
 
 #Environment
 This library is writen in c++ 11. It was tested in MSVC15 and GNUC4.9.2 compiler.
