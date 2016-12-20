@@ -3,7 +3,7 @@
 A tiny regular expression library.
 
 #Language
-*[English](http://) 
+*[English](https://github.com/jstzwj/TinyRegex/blob/master/README.md) </br>
 *[中文](http://)
 
 #Environment
