@@ -232,6 +232,14 @@ int main(int argc, char *argv[])
     assert(0==set.subMatch[0].begin);
     assert(6==set.subMatch[0].end);
 
+    //posix character test
+    r.compile(T("1[:digit:]2"));
+    assert(true==r.match(T("122")));
+    assert(true==r.match(T("192")));
+    assert(true==r.match(T("102")));
+    assert(false==r.match(T("1a2")));
+
+
     //=========================
     //compile option test
     //=========================

@@ -315,36 +315,154 @@ namespace tyre
             {
                 range->icase=true;
             }
-            //isInverse
-            if(this->isChar(pattern,curpos,T('^')))
+            //posix character
+            if(this->isChar(pattern,curpos,T(':')))
             {
-                range->isInverse=true;
-            }
-            CharRange curRange;
-            while ((unsigned int)(curpos)<pattern.length())
-            {
-                if(!isChar(pattern,curpos,T(']')))
+                if(this->isStr(pattern,curpos,T("alnum")))
                 {
-                    if(parseSeqChar(pattern,curpos,&curRange))
-                    {
-                        range->rangles.push_back(curRange);
-                    }
-                    else
-                    {
-                        curRange.charBegin=pattern[curpos];
-                        curRange.charEnd=pattern[curpos];
-                        range->rangles.push_back(curRange);
-                        ++curpos;
-                    }
+                    range->rangles.push_back(CharRange(T('a'),T('z')));
+                    range->rangles.push_back(CharRange(T('A'),T('Z')));
+                    range->rangles.push_back(CharRange(T('0'),T('9')));
+                }
+                else if(this->isStr(pattern,curpos,T("alpha")))
+                {
+                    range->rangles.push_back(CharRange(T('a'),T('z')));
+                    range->rangles.push_back(CharRange(T('A'),T('Z')));
+                }
+                else if(this->isStr(pattern,curpos,T("ascii")))
+                {
+                    range->rangles.push_back(CharRange(0x00,0x7F));
+                }
+                else if(this->isStr(pattern,curpos,T("blank")))
+                {
+                    range->rangles.push_back(CharRange(T(' '),T(' ')));
+                    range->rangles.push_back(CharRange(T('\t'),T('\t')));
+                }
+                else if(this->isStr(pattern,curpos,T("cntrl")))
+                {
+                    range->rangles.push_back(CharRange(0x00,0x1F));
+                    range->rangles.push_back(CharRange(0x7F,0x7F));
+                }
+                else if(this->isStr(pattern,curpos,T("digit")))
+                {
+                    range->rangles.push_back(CharRange(T('0'),T('9')));
+                }
+                else if(this->isStr(pattern,curpos,T("graph")))
+                {
+                    range->rangles.push_back(CharRange(0x21,0x7E));
+                }
+                else if(this->isStr(pattern,curpos,T("lower")))
+                {
+                    range->rangles.push_back(CharRange(T('a'),T('z')));
+                }
+                else if(this->isStr(pattern,curpos,T("print")))
+                {
+                    range->rangles.push_back(CharRange(0x20,0x7E));
+                }
+                else if(this->isStr(pattern,curpos,T("punct")))
+                {
+                    //!"#$%&'()*+,\-./:;<=>?@[\\\]^_`{|}~
+                    range->rangles.push_back(CharRange(T('!'),T('!')));
+                    range->rangles.push_back(CharRange(T('\"'),T('\"')));
+                    range->rangles.push_back(CharRange(T('#'),T('#')));
+                    range->rangles.push_back(CharRange(T('$'),T('$')));
+                    range->rangles.push_back(CharRange(T('%'),T('%')));
+                    range->rangles.push_back(CharRange(T('&'),T('&')));
+                    range->rangles.push_back(CharRange(T('\''),T('\'')));
+                    range->rangles.push_back(CharRange(T('('),T('(')));
+                    range->rangles.push_back(CharRange(T(')'),T(')')));
+                    range->rangles.push_back(CharRange(T('*'),T('*')));
+                    range->rangles.push_back(CharRange(T('+'),T('+')));
+                    range->rangles.push_back(CharRange(T(','),T(',')));
+                    range->rangles.push_back(CharRange(T('\\'),T('\\')));
+                    range->rangles.push_back(CharRange(T('-'),T('-')));
+                    range->rangles.push_back(CharRange(T('.'),T('.')));
+                    range->rangles.push_back(CharRange(T('/'),T('/')));
+                    range->rangles.push_back(CharRange(T(':'),T(':')));
+                    range->rangles.push_back(CharRange(T(';'),T(';')));
+                    range->rangles.push_back(CharRange(T('<'),T('<')));
+                    range->rangles.push_back(CharRange(T('>'),T('>')));
+                    range->rangles.push_back(CharRange(T('?'),T('?')));
+                    range->rangles.push_back(CharRange(T('@'),T('@')));
+                    range->rangles.push_back(CharRange(T('['),T('[')));
+                    range->rangles.push_back(CharRange(T(']'),T(']')));
+                    range->rangles.push_back(CharRange(T('^'),T('^')));
+                    range->rangles.push_back(CharRange(T('_'),T('_')));
+                    range->rangles.push_back(CharRange(T('`'),T('`')));
+                    range->rangles.push_back(CharRange(T('{'),T('{')));
+                    range->rangles.push_back(CharRange(T('}'),T('}')));
+                    range->rangles.push_back(CharRange(T('|'),T('|')));
+                    range->rangles.push_back(CharRange(T('~'),T('~')));
+                }
+                else if(this->isStr(pattern,curpos,T("space")))
+                {
+                    range->rangles.push_back(CharRange(T(' '),T(' ')));
+                    range->rangles.push_back(CharRange(T('\t'),T('\t')));
+                    range->rangles.push_back(CharRange(T('\r'),T('\r')));
+                    range->rangles.push_back(CharRange(T('\n'),T('\n')));
+                    range->rangles.push_back(CharRange(T('\v'),T('\v')));
+                    range->rangles.push_back(CharRange(T('\f'),T('\f')));
+                }
+                else if(this->isStr(pattern,curpos,T("upper")))
+                {
+                    range->rangles.push_back(CharRange(T('A'),T('Z')));
+                }
+                else if(this->isStr(pattern,curpos,T("word")))
+                {
+                    range->rangles.push_back(CharRange(T('a'),T('z')));
+                    range->rangles.push_back(CharRange(T('A'),T('Z')));
+                    range->rangles.push_back(CharRange(T('0'),T('9')));
+                    range->rangles.push_back(CharRange(T('_'),T('_')));
+                }
+                else if(this->isStr(pattern,curpos,T("xdigit")))
+                {
+                    range->rangles.push_back(CharRange(T('a'),T('f')));
+                    range->rangles.push_back(CharRange(T('A'),T('F')));
+                    range->rangles.push_back(CharRange(T('0'),T('9')));
                 }
                 else
                 {
-                    break;
+                    throw RegexError(ErrorCode::error_ctype);
                 }
-                if((unsigned int)(curpos)>=pattern.length())
+                if(!this->isStr(pattern,curpos,T(":]")))
                 {
-                    curpos=savePos;
                     throw RegexError(ErrorCode::error_brack);
+                }
+            }
+            else    //char set
+            {
+                //isInverse
+                if(this->isChar(pattern,curpos,T('^')))
+                {
+                    range->isInverse=true;
+                }
+                CharRange curRange;
+                while ((unsigned int)(curpos)<pattern.length())
+                {
+                    if(!isChar(pattern,curpos,T(']')))
+                    {
+                        if(parseSeqChar(pattern,curpos,&curRange))
+                        {
+                            range->rangles.push_back(curRange);
+                        }
+                        else
+                        {
+                            curRange.charBegin=pattern[curpos];
+                            curRange.charEnd=pattern[curpos];
+                            range->rangles.push_back(curRange);
+                            ++curpos;
+                        }
+                    }
+                    else
+                    {
+                        break;
+                    }
+                    if((unsigned int)(curpos)>=pattern.length())
+                    {
+                        curpos=savePos;
+                        delete range;
+                        throw RegexError(ErrorCode::error_brack);
+                    }
                 }
             }
             return range;
