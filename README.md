@@ -64,6 +64,23 @@ supported capture:
 |  `(?<...>...)` | named capture |
 |  `(?:...)` | no capture |
 
+Posix Character Classes
+| class | describe |
+|:-------:|:--------:|
+|  `[:alnum:]`  |  [0-9a-zA-Z] |
+|  `[:alpha:]` | [a-zA-Z] |
+|  `[:ascii:]` | [\x01-\x7F] |
+|  `[:blank:]`  |  [ \t] |
+|  `[:cntrl:]` | [\x01-\x1F] |
+|  `[:digit:]` | [0-9] |
+|  `[:graph:]`  |  [^\x01-\x20] |
+|  `[:lower:]` | [a-z] |
+|  `[:print:]` | [\t\x20-\xFF] |
+|  `[:punct:]`  |  [-!"#$%&'( )\*+,./:;<=>?@[\\\]^\_'{|}~] |
+|  `[:space:]` | [\n\r\t \x0B] |
+|  `[:upper:]` | [A-Z] |
+|  `[:xdigit:]`  |  [0-9a-fA-F] |
+
 
 ##Match and compile option
 
