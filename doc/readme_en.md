@@ -177,4 +177,6 @@ About char set:</br>
 use utf-16: add "#define TINYREGEX_UNICODE" before "base.h";</br>
 use ascii: remove "#define TINYREGEX_UNICODE" in "base.h";</br>
 
+##Contact me
+e-mail:1103870790@qq.com
 

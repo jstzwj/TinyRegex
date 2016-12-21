@@ -6,7 +6,6 @@ CONFIG -= qt
 SOURCES += main.cpp \
     tinyregex.cpp \
     astparser.cpp \
-    message.cpp \
     automaton.cpp \
     nfagraph.cpp \
     regexresult.cpp \
@@ -19,7 +18,6 @@ HEADERS += \
     base.h \
     astnode.h \
     astparser.h \
-    message.h \
     automaton.h \
     nfagraph.h \
     regexresult.h \

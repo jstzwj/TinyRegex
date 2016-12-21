@@ -536,6 +536,23 @@ namespace tyre
                 case T('D'):
                     range->rangles.push_back(CharRange(T('0'),T('9'),true));
                     break;
+                case T('x'):
+                case T('X'):
+                    consume(pattern,curpos);
+                    char_t first=getChar(pattern,curpos);
+                    char_t second=getChar(pattern,curpos);
+                    if(isHex(first)&&isHex(second))
+                    {
+                        int num=toNum(first)*16+toNum(second);
+                        range->rangles.push_back(CharRange(num,num));
+                    }
+                    else
+                    {
+                        delete range;
+                        throw RegexError(ErrorCode::error_escape);
+                    }
+
+                    break;
                 //name or number capture reference
                 case T('k'):
                 {
@@ -743,6 +760,14 @@ namespace tyre
             ++pos;
         }
         return pos-curpos;
+    }
+
+    char_t AstParser::getChar(const string_t &pattern, int &curpos)
+    {
+        if(curpos<pattern.length()-1)
+        {
+            return pattern[curpos++];
+        }
     }
 
     bool AstParser::consume(const string_t &pattern, int &curpos)

@@ -47,8 +47,24 @@ namespace tyre
         {
             return pattern.length()==static_cast<unsigned int>(curpos);
         }
+        bool isHex(char_t c)
+        {
+            if(c>=T('0')&&c<=T('9')||c>=T('a')&&c<=T('f')||c>=T('A')&&a<=T('F'))
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
         int getPositiveInt(const string_t & pattern,int &curpos);
         int getTokenLength(const string_t & pattern,int &curpos);
+        char_t getChar(const string_t & pattern,int &curpos);
+        int toNum(char_t c)
+        {
+            return c-T('0');
+        }
         bool consume(const string_t & pattern,int &curpos);
 
     };
