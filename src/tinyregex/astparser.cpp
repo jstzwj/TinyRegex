@@ -282,7 +282,8 @@ namespace tyre
 
         if((unsigned int)(curpos)<pattern.length()-2&&curpos>=0)
         {
-            if(pattern[curpos+1]==T('-'))
+            //pay attention to the fake char range
+            if(pattern[curpos+1]==T('-')&&pattern[curpos+2]!=T(']'))
             {
                 charRange->charBegin=pattern[curpos];
                 charRange->charEnd=pattern[curpos+2];
