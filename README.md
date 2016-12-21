@@ -151,6 +151,7 @@ Posix Character Classes:
 		*string replace
 		*optimize
 		*posix regexp
+		*compile to C Lang code
 
  These features are needed added in.
 

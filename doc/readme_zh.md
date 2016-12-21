@@ -139,6 +139,7 @@ Posix 字符类:
 		*string replace
 		*optimize
 		*posix regexp
+		*compile to C Lang code
 
  这些特性将被加入
  
