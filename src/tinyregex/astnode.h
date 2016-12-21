@@ -250,32 +250,32 @@ namespace tyre
     {
     public:
         ExpCharRange():isInverse(false),icase(false){}
-        std::vector<CharRange> rangles;
+        std::vector<CharRange> ranges;
         bool isInverse;
         bool icase;
         virtual void release(){delete this;}
         virtual void generate(Automaton * graph,NfaGraph result)
         {
             //加入集合划分
-            for(unsigned int i=0;i<rangles.size();++i)
+            for(unsigned int i=0;i<ranges.size();++i)
             {
                 if(icase==true)
                 {
                     std::vector<CharRange> caseRange;
-                    caseRange=rangles[i].interSection(T('A'),T('Z'));
+                    caseRange=ranges[i].interSection(T('A'),T('Z'));
                     for(unsigned i=0;i<caseRange.size();++i)
                     {
                         caseRange[i].toLower();
                         graph->addCharRange(result.begin,result.end,caseRange[i]);
                     }
-                    caseRange=rangles[i].interSection(T('a'),T('z'));
+                    caseRange=ranges[i].interSection(T('a'),T('z'));
                     for(unsigned i=0;i<caseRange.size();++i)
                     {
                         caseRange[i].toUpper();
                         graph->addCharRange(result.begin,result.end,caseRange[i]);
                     }
                 }
-                graph->addCharRange(result.begin,result.end,rangles[i]);
+                graph->addCharRange(result.begin,result.end,ranges[i]);
             }
         }
         virtual ~ExpCharRange(){}

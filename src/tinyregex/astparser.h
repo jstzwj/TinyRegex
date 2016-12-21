@@ -38,6 +38,7 @@ namespace tyre
         ExpBase * parseFunction(const string_t & pattern,int &curpos);
         ExpBase * parseLoop(const string_t & pattern,int &curpos);
         bool parseSeqChar(const string_t & pattern, int &curpos, CharRange *charRange);
+        std::vector<CharRange> parseChar(const string_t & pattern, int &curpos);
         ExpBase * parseCharSet(const string_t & pattern,int &curpos);
         string_t parseName(const string_t & pattern,int &curpos);
         //tools
@@ -49,7 +50,11 @@ namespace tyre
         }
         bool isHex(char_t c)
         {
-            if(c>=T('0')&&c<=T('9')||c>=T('a')&&c<=T('f')||c>=T('A')&&a<=T('F'))
+            if(
+                    (c>=T('0')&&c<=T('9'))||
+                    (c>=T('a')&&c<=T('f'))||
+                    (c>=T('A')&&c<=T('F'))
+                    )
             {
                 return true;
             }
