@@ -152,7 +152,7 @@ match -- --
 	{
 		TinyRegex r(T("hello world"));//T("") indicates the char set of tinyregex
 		r.match(T("hello world"));//return true
-		r.match(T("hello world"));//return false
+		r.match(T("HelloWorld"));//return false
 		return 0;
 	}
 
