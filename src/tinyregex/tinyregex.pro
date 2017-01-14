@@ -3,14 +3,15 @@ CONFIG += console c++11
 CONFIG -= app_bundle
 CONFIG -= qt
 
-SOURCES += main.cpp \
+SOURCES += \
     tinyregex.cpp \
     astparser.cpp \
     automaton.cpp \
     nfagraph.cpp \
     regexresult.cpp \
     stringutilities.cpp \
-    regexsearch.cpp
+    regexsearch.cpp \
+    main.cpp
 
 
 HEADERS += \

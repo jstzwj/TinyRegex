@@ -44,6 +44,28 @@ namespace tyre
         }
     }
 
+    string_t RegexSearch::replace(const RegexResult &result, const string_t &str, int pos, const string_t &replaceStr)
+    {
+        string_t ans;
+        unsigned int curSubMatch=0;
+        for(unsigned int i=pos;i<str.length();)
+        {
+            if(curSubMatch!=result.subMatch.size()&&
+                    result.subMatch[curSubMatch].begin==(int)i)
+            {
+                ans.insert(ans.length(),replaceStr);
+                i+=result.subMatch[curSubMatch].end-result.subMatch[curSubMatch].begin+1;
+                ++curSubMatch;
+            }
+            else
+            {
+                ans.push_back(str[i]);
+                ++i;
+            }
+        }
+        return ans;
+    }
+
     bool RegexSearch::matchBfs(State * beginState,const string_t &str, int pos)
     {
         std::vector<State *> saveStack;

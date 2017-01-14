@@ -21,6 +21,7 @@ namespace tyre
 
         bool match(const string_t & str,MatchFlag flag=MatchFlag::MATCH_DEFAULT);
         RegexResult search(const string_t & str,MatchFlag flag=MatchFlag::MATCH_DEFAULT);
+        string_t replace(const string_t & str,const string_t &replaceStr,MatchFlag flag=MatchFlag::MATCH_DEFAULT);
     private:
         ExpBase * root;
         Automaton * graph;

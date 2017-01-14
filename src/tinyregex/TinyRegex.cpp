@@ -95,6 +95,14 @@ namespace tyre
         return result;
     }
 
+    string_t TinyRegex::replace(const string_t &str, const string_t &replaceStr, MatchFlag flag)
+    {
+        RegexResult result=this->search(str,flag);
+        RegexSubMatch smatch;
+        RegexSearch searchAutomaton(smatch,flag);
+        return searchAutomaton.replace(result,str,0,replaceStr);
+    }
+
 }
 
 

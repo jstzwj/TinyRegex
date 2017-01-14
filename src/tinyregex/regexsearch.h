@@ -21,6 +21,7 @@ namespace tyre
         RegexSearch(RegexSubMatch &_smatch, MatchFlag _flag=MatchFlag::MATCH_DEFAULT);
         bool match(State * beginState,const string_t &str, int pos);
         bool search(State * beginState,const string_t &str, int pos);
+        string_t replace(const RegexResult &result,const string_t &str, int pos,const string_t & replaceStr);
     private:
         bool matchDfs(State * beginState,const string_t &str, int acpos, int pos);
         bool matchBfs(State * beginState,const string_t &str, int pos);
