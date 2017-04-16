@@ -2,14 +2,14 @@
 ===
 A tiny regular expression library.
 
-#Language
-*[English](https://github.com/jstzwj/TinyRegex/blob/master/doc/readme_en.md) </br>
-*[中文](https://github.com/jstzwj/TinyRegex/blob/master/doc/readme_zh.md)
+# Language
+* [English](https://github.com/jstzwj/TinyRegex/blob/master/doc/readme_en.md) </br>
+* [中文](https://github.com/jstzwj/TinyRegex/blob/master/doc/readme_zh.md)
 
-#Environment
+# Environment
 This library is writen in c++ 11. It was tested in MSVC15 and GNUC4.9.2 compiler.
 
-#Syntax supported
+# Syntax supported
 ## pattern
 | pattern | describe |
 |:-------:|:--------:|
@@ -87,7 +87,7 @@ Posix Character Classes:
 |  `[:xdigit:]`  |  `[0-9a-fA-F]` |
 
 
-##Match and compile option
+## Match and compile option
 
 ```cpp
     enum SyntaxFlag
@@ -142,7 +142,7 @@ Posix Character Classes:
 
 
 
-##Development process
+## Development process
  
 		*Capture		√
 		*DFA
@@ -156,7 +156,7 @@ Posix Character Classes:
  These features are needed added in.
 
 
-##How to use it
+## How to use it
 
 match -- --
 ```cpp
@@ -179,5 +179,5 @@ use utf-16: add "#define TINYREGEX_UNICODE" before "base.h";</br>
 use ascii: remove "#define TINYREGEX_UNICODE" in "base.h";</br>
 
 
-##Contact me
+## Contact me
 e-mail:1103870790@qq.com
