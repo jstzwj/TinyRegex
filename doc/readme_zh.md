@@ -1,14 +1,14 @@
 ﻿tinyregex
 ===
 这是一个小型正则表达式引擎。
-#语言
-*[English](https://github.com/jstzwj/TinyRegex/blob/master/doc/readme_en.md) </br>
-*[中文](https://github.com/jstzwj/TinyRegex/blob/master/doc/readme_zh.md)
+# 语言
+* [English](https://github.com/jstzwj/TinyRegex/blob/master/doc/readme_en.md) </br>
+* [中文](https://github.com/jstzwj/TinyRegex/blob/master/doc/readme_zh.md)
 
-#环境
+# 环境
 这个正则表达式引擎使用了部分c++11的特性。它在MSVC15和GNUC4.9.2编译器上测试通过。
 
-#支持的语法
+# 支持的语法
 ## 符号
 | 符号 | 描述 |
 |:-------:|:--------:|
@@ -86,7 +86,7 @@ Posix 字符类:
 |  `[:xdigit:]`  |  `[0-9a-fA-F]` |
 
 
-##匹配和编译选项
+## 匹配和编译选项
 ```cpp
     enum SyntaxFlag
     {
@@ -130,7 +130,7 @@ Posix 字符类:
 
 
 
-##开发进度
+## 开发进度
  
 		*Capture		√
 		*DFA
@@ -143,7 +143,7 @@ Posix 字符类:
 
  这些特性将被加入
  
-##如何使用
+## 如何使用
 
 match -- --
 ```cpp
@@ -165,5 +165,5 @@ match -- --
 使用 utf-16: 添加 "#define TINYREGEX_UNICODE" 在 "base.h"前;</br>
 使用 ascii: 移除 "#define TINYREGEX_UNICODE" 在 "base.h"中;</br>
 
-##联系我
+## 联系我
 e-mail:1103870790@qq.com
